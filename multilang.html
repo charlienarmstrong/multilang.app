@@ -1,0 +1,4309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>MultiLang | multilang.app</title>
+  <meta name="description" content="MultiLang helps learners compare vocabulary across several languages at once.">
+  <link rel="canonical" href="https://multilang.app/">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e2428;
+      --muted: #667176;
+      --line: #d9dedb;
+      --paper: #fbfbf8;
+      --panel: #ffffff;
+      --green: #167a5a;
+      --teal: #0f6b7a;
+      --rose: #aa3e52;
+      --gold: #b7791f;
+      --soft-green: #e8f4ee;
+      --soft-teal: #e6f3f5;
+      --soft-rose: #f8e9ed;
+      --soft-gold: #f7efd9;
+      --shadow: 0 18px 40px rgba(30, 36, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    .app.locked,
+    .landing.hidden {
+      display: none;
+    }
+
+    .landing {
+      min-height: 100vh;
+      background: #f7f8f4;
+      color: var(--ink);
+    }
+
+    .landing-top {
+      min-height: 72px;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(247, 248, 244, 0.94);
+      position: sticky;
+      top: 0;
+      z-index: 6;
+      backdrop-filter: blur(14px);
+    }
+
+    .landing-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .landing-hero {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.94fr) minmax(420px, 1.06fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .landing-copy {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .landing-copy h1 {
+      margin: 0;
+      font-size: 56px;
+      line-height: 1.02;
+      max-width: 620px;
+    }
+
+    .landing-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+      max-width: 620px;
+    }
+
+    .landing-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .landing-preview {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .preview-card {
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      min-height: 150px;
+    }
+
+    .preview-card.es {
+      background: var(--soft-green);
+    }
+
+    .preview-card.fr {
+      background: var(--soft-teal);
+    }
+
+    .preview-card.ja {
+      background: var(--soft-rose);
+    }
+
+    .preview-card strong {
+      font-size: 24px;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .preview-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 110px repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      background: #fbfbf8;
+      font-size: 13px;
+    }
+
+    .preview-row b {
+      color: var(--green);
+    }
+
+    .feature-strip {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 0 0 36px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .feature strong {
+      font-size: 16px;
+    }
+
+    .feature span {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .sidebar {
+      background: #21302c;
+      color: #f4f7f2;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 24px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #e9c46a;
+      color: #21302c;
+      font-weight: 900;
+    }
+
+    .nav-label {
+      color: #b9c5bf;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 8px 10px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      border: 0;
+      width: 100%;
+      min-height: 42px;
+      border-radius: 8px;
+      background: transparent;
+      color: #e9efeb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255, 255, 255, 0.11);
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      stroke-width: 2;
+    }
+
+    .mini-panel {
+      margin-top: auto;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .mini-panel strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .mini-panel p {
+      color: #d5ddd7;
+      font-size: 13px;
+      margin: 0 0 12px;
+      line-height: 1.4;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 251, 248, 0.93);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar h1 {
+      font-size: 20px;
+      margin: 0;
+      font-weight: 800;
+    }
+
+    .topbar p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-panel {
+      display: none;
+      grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--line);
+      background: #f4f6f2;
+    }
+
+    .search-panel.open {
+      display: grid;
+    }
+
+    .search-panel input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .search-results {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .search-result {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      min-height: 42px;
+      padding: 8px 10px;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .search-result strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .search-result span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .icon-button,
+    .primary,
+    .secondary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 40px;
+      background: var(--panel);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 13px;
+      box-shadow: 0 1px 0 rgba(30, 36, 40, 0.04);
+    }
+
+    .icon-button {
+      width: 40px;
+      padding: 0;
+    }
+
+    .primary {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    .primary:disabled {
+      background: #d6dbd8;
+      border-color: #d6dbd8;
+      color: #7b8580;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .login-button {
+      background: #21302c;
+      color: #fff;
+      border-color: #21302c;
+    }
+
+    .secondary:hover,
+    .icon-button:hover {
+      border-color: #aeb8b3;
+    }
+
+    .highlight-pulse {
+      animation: highlight-pulse 1.1s ease;
+    }
+
+    @keyframes highlight-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(22, 122, 90, 0.32); }
+      100% { box-shadow: var(--shadow); }
+    }
+
+    .auth-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(30, 36, 40, 0.48);
+    }
+
+    .auth-backdrop.open {
+      display: grid;
+    }
+
+    .auth-card {
+      width: min(920px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 28px 80px rgba(30, 36, 40, 0.24);
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(320px, 1.14fr);
+    }
+
+    .auth-visual {
+      background: #21302c;
+      color: #f4f7f2;
+      padding: 28px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+    }
+
+    .auth-visual h2 {
+      font-size: 30px;
+      line-height: 1.08;
+      margin: 12px 0 10px;
+    }
+
+    .auth-visual p {
+      color: #d5ddd7;
+      line-height: 1.48;
+      margin: 0;
+    }
+
+    .save-preview {
+      display: grid;
+      gap: 10px;
+    }
+
+    .save-preview .focus-row {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .save-preview .focus-row span {
+      color: #c7d8d0;
+    }
+
+    .auth-form {
+      padding: 26px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .auth-close {
+      justify-self: end;
+    }
+
+    .auth-form h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .auth-form p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .social-stack,
+    .field-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .social-button {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .google-button-shell {
+      min-height: 46px;
+      display: grid;
+      align-items: center;
+    }
+
+    .auth-provider-message {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #f5f7f4;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .auth-provider-message strong,
+    .auth-provider-message span {
+      display: block;
+    }
+
+    .auth-provider-message strong {
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .google-setup-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .google-setup-row input {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px;
+      min-width: 0;
+    }
+
+    .social-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 900;
+      border: 1px solid var(--line);
+    }
+
+    .microsoft-mark {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+
+    .microsoft-mark span {
+      display: block;
+    }
+
+    .microsoft-mark span:nth-child(1) { background: #f25022; }
+    .microsoft-mark span:nth-child(2) { background: #7fba00; }
+    .microsoft-mark span:nth-child(3) { background: #00a4ef; }
+    .microsoft-mark span:nth-child(4) { background: #ffb900; }
+
+    .divider {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      background: var(--line);
+    }
+
+    .field-stack label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field-stack input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .auth-footer {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(18px);
+      z-index: 30;
+      min-width: min(420px, calc(100vw - 32px));
+      border: 1px solid rgba(30, 36, 40, 0.12);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #21302c;
+      color: #fff;
+      box-shadow: 0 16px 44px rgba(30, 36, 40, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .profile-chip {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .profile-chip.visible {
+      display: inline-flex;
+    }
+
+    #signOutButton {
+      display: none;
+    }
+
+    #signOutButton.visible {
+      display: inline-flex;
+    }
+
+    .content {
+      padding: 24px 28px 32px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .set-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .set-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .set-row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .set-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .set-row-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .set-scroll-actions {
+      display: flex;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .set-track {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(230px, 280px);
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding: 2px 2px 10px;
+      scrollbar-width: thin;
+    }
+
+    .set-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      text-align: left;
+      color: var(--ink);
+      min-height: 178px;
+      scroll-snap-align: start;
+    }
+
+    .set-card.active {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(22, 122, 90, 0.12);
+    }
+
+    .set-card.locked {
+      opacity: 0.58;
+    }
+
+    .set-card h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .set-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.42;
+      font-size: 13px;
+    }
+
+    .set-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .band {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(310px, 0.82fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .streak {
+      min-width: 126px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--soft-gold);
+      text-align: center;
+      color: #6e4a11;
+    }
+
+    .streak strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .language-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .language-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      min-height: 208px;
+    }
+
+    .language-card.es {
+      background: var(--soft-green);
+    }
+
+    .language-card.fr {
+      background: var(--soft-teal);
+    }
+
+    .language-card.ja {
+      background: var(--soft-rose);
+    }
+
+    .language-card.off {
+      opacity: 0.42;
+      filter: grayscale(0.5);
+    }
+
+    .language-head,
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .language-head h3,
+    .panel-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(30, 36, 40, 0.08);
+      font-size: 12px;
+      color: #40504a;
+      white-space: nowrap;
+    }
+
+    .phrase {
+      display: grid;
+      gap: 3px;
+    }
+
+    .phrase strong {
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .phrase span,
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .meter {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(30, 36, 40, 0.1);
+      overflow: hidden;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .selector-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .language-panel {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+
+    .language-panel .panel-head {
+      align-items: center;
+    }
+
+    .choice-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .language-panel .choice-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .language-choice {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .language-choice input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+    }
+
+    .language-choice strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .language-choice span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+    }
+
+    .study-area.hidden {
+      display: none;
+    }
+
+    .study-area {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-page,
+    .study-page {
+      display: grid;
+      gap: 18px;
+    }
+
+    .dashboard-page.hidden,
+    .study-page.hidden {
+      display: none;
+    }
+
+    .study-page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .study-page-head h2 {
+      margin: 6px 0 4px;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .study-page-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    .study-mode-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .study-mode-button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 54px;
+      padding: 12px 14px;
+      font-weight: 800;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .study-mode-button.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(47, 93, 80, 0.16);
+    }
+
+    .study-view.hidden {
+      display: none;
+    }
+
+    .flashcard-panel {
+      padding: 18px;
+    }
+
+    .flashcard-stage {
+      display: grid;
+      gap: 16px;
+    }
+
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .flashcard-card {
+      border: 0;
+      border-radius: 8px;
+      min-height: 260px;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      perspective: 1200px;
+      text-align: left;
+    }
+
+    .flashcard-card-inner {
+      position: relative;
+      min-height: 260px;
+      transition: transform 0.62s cubic-bezier(.2, .75, .2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flashcard-card.flipped .flashcard-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      padding: 24px;
+      backface-visibility: hidden;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .flashcard-front {
+      background: #263a35;
+      color: #fff;
+    }
+
+    .flashcard-back {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face span {
+      color: #c7d8d0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .flashcard-back span {
+      color: var(--muted);
+    }
+
+    .flashcard-face strong {
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.04;
+      overflow-wrap: anywhere;
+    }
+
+    .flashcard-face em {
+      color: inherit;
+      font-style: normal;
+      opacity: 0.72;
+      line-height: 1.45;
+    }
+
+    .flashcard-translations {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flashcard-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .flashcard-hint {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      margin: 0;
+    }
+
+    .vocab-panel,
+    .quiz-panel,
+    .stats-panel {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .quiz-panel {
+      position: relative;
+      padding-bottom: 76px;
+    }
+
+    .learning-stack {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .track-panel {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .track-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .phrase-card,
+    .grammar-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .phrase-card strong {
+      font-size: 20px;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+
+    .phrase-card em {
+      color: var(--muted);
+      font-style: normal;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .grammar-card strong {
+      font-size: 15px;
+    }
+
+    .grammar-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .tabs {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      background: #eef1ee;
+      border-radius: 8px;
+      padding: 4px;
+      margin: 16px 0;
+    }
+
+    .tabs button {
+      border: 0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      min-height: 34px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .tabs button.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(30, 36, 40, 0.08);
+    }
+
+    .vocab-table {
+      display: grid;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .vocab-row {
+      display: grid;
+      grid-template-columns: 110px repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .vocab-row.header {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .concept,
+    .word-cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 68px;
+      padding: 10px;
+      background: #fff;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+    }
+
+    .concept {
+      background: #f2f4f1;
+      font-weight: 800;
+    }
+
+    .word-cell strong {
+      font-size: 17px;
+      overflow-wrap: anywhere;
+    }
+
+    .word-with-audio {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .word-with-audio strong,
+    .word-with-audio b {
+      min-width: 0;
+    }
+
+    .audio-button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 0;
+    }
+
+    .audio-button:hover {
+      border-color: var(--green);
+      background: var(--soft-green);
+    }
+
+    .flashcard-face .audio-button {
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    ruby.furigana {
+      ruby-position: over;
+      line-height: 1.25;
+    }
+
+    ruby.furigana rt {
+      color: var(--muted);
+      font-size: 0.58em;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .flashcard-face ruby.furigana rt {
+      color: inherit;
+      opacity: 0.78;
+    }
+
+    .word-cell span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .word-cell.hidden-language {
+      display: none;
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .prompt-box {
+      border-radius: 8px;
+      padding: 16px 18px;
+      background: #263a35;
+      color: #fff;
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .prompt-content {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 620px;
+    }
+
+    .prompt-box span {
+      color: #c7d8d0;
+      font-size: 13px;
+    }
+
+    .quiz-progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: #8fd6ad;
+      transition: width 0.28s ease;
+    }
+
+    .prompt-box strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1.12;
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .answer-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .quiz-language-group {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8faf8;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .quiz-language-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .quiz-language-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .answer-stack button {
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      text-align: left;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .answer-stack button.correct {
+      border-color: var(--green);
+      background: var(--soft-green);
+    }
+
+    .answer-stack button.incorrect {
+      border-color: var(--rose);
+      background: var(--soft-rose);
+    }
+
+    .answer-stack button.selected {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(60, 116, 92, 0.16);
+    }
+
+    .answer-stack b {
+      display: block;
+    }
+
+    .answer-stack span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quiz-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-test-label {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      min-height: 42px;
+      padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 800;
+    }
+
+    .quiz-mode-button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-mode-button.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    .quiz-corner-score {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      min-width: 96px;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--green);
+      box-shadow: 0 10px 22px rgba(30, 36, 40, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .stats-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .focus-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .focus-row:last-child {
+      border-bottom: 0;
+    }
+
+    .flag {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .flag.es {
+      background: var(--rose);
+    }
+
+    .flag.fr {
+      background: var(--teal);
+    }
+
+    .flag.pt {
+      background: #3f8f68;
+    }
+
+    .flag.nl {
+      background: #d16a4a;
+    }
+
+    .flag.sv {
+      background: #5177b8;
+    }
+
+    .flag.vi {
+      background: #b64a54;
+    }
+
+    .flag.th {
+      background: #8b5fbf;
+    }
+
+    .flag.ms {
+      background: #2f7f8f;
+    }
+
+    .flag.ja {
+      background: var(--gold);
+    }
+
+    .flag.ar_sa {
+      background: #5f6bd6;
+    }
+
+    .flag.de {
+      background: #4f5a62;
+    }
+
+    .flag.it {
+      background: #2f8f6b;
+    }
+
+    .flag.zh {
+      background: #c5534d;
+    }
+
+    .flag.ko {
+      background: #4f7fcf;
+    }
+
+    .flag.hi {
+      background: #d08a35;
+    }
+
+    .flag.ru {
+      background: #7b6d8d;
+    }
+
+    .flag.he {
+      background: #315c9b;
+    }
+
+    .flag.el {
+      background: #4b8aa8;
+    }
+
+    .focus-row strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .focus-row span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .switch {
+      width: 44px;
+      height: 24px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+      position: relative;
+      flex: 0 0 auto;
+      padding: 0;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .switch[aria-pressed="false"] {
+      background: #aeb8b3;
+    }
+
+    .switch[aria-pressed="false"]::after {
+      left: 3px;
+      right: auto;
+    }
+
+    @media (max-width: 1180px) {
+      .language-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .landing-hero,
+      .feature-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .band,
+      .workspace,
+      .learning-stack,
+      .quiz-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-panel {
+        padding-bottom: 18px;
+      }
+
+      .quiz-corner-score {
+        position: static;
+        margin-top: 14px;
+        margin-left: auto;
+      }
+
+      .study-page-head {
+        flex-direction: column;
+      }
+
+      .study-mode-bar,
+      .flashcard-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .preview-grid,
+      .preview-row {
+        grid-template-columns: 1fr;
+      }
+
+      .vocab-row {
+        grid-template-columns: 1fr;
+      }
+
+      .vocab-row.header {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 8;
+        padding: 14px;
+      }
+
+      .nav,
+      .mini-panel,
+      .nav-label {
+        display: none;
+      }
+
+      .topbar {
+        padding: 14px 16px;
+        align-items: flex-start;
+      }
+
+      .actions .secondary {
+        display: none;
+      }
+
+      .actions .login-button {
+        display: inline-flex;
+      }
+
+      .search-panel {
+        grid-template-columns: 1fr;
+        padding: 12px 16px;
+      }
+
+      .auth-card {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-visual {
+        display: none;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .landing-top {
+        padding: 14px 16px;
+        align-items: flex-start;
+      }
+
+      .landing-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .landing-hero {
+        width: min(100% - 32px, 1180px);
+        padding-top: 30px;
+      }
+
+      .landing-copy h1 {
+        font-size: 38px;
+      }
+
+      .feature-strip {
+        width: min(100% - 32px, 1180px);
+      }
+
+      .prompt-box {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .prompt-box strong {
+        font-size: 30px;
+      }
+
+      .answer-stack {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="landing" id="landingPage">
+    <header class="landing-top">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <span>MultiLang</span>
+      </div>
+      <div class="landing-actions">
+        <button class="secondary" type="button" id="landingDemo">Try Demo</button>
+        <button class="primary login-button" type="button" id="landingLogin">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+          Log in / Sign up
+        </button>
+      </div>
+    </header>
+
+    <div class="landing-hero">
+      <div class="landing-copy">
+        <div class="eyebrow">Learn together, compare clearly</div>
+        <h1>Learn multiple languages side by side</h1>
+        <p>MultiLang keeps vocabulary organized across the languages you are learning, so comparison helps instead of overwhelming you.</p>
+        <div class="landing-buttons">
+          <button class="primary login-button" type="button" id="heroLogin">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+            Log in / Sign up
+          </button>
+          <button class="secondary" type="button" id="heroDemo">Try Demo</button>
+        </div>
+      </div>
+
+      <div class="landing-preview" aria-label="MultiLang app preview">
+        <div class="preview-top">
+          <div>
+            <div class="eyebrow">Today&apos;s board</div>
+            <strong>Food and cafe basics</strong>
+          </div>
+          <span class="pill">3 languages</span>
+        </div>
+        <div class="preview-grid">
+          <div class="preview-card es">
+            <span class="pill">Spanish</span>
+            <strong>el agua</strong>
+            <span class="note">feminine noun with el before stressed a</span>
+          </div>
+          <div class="preview-card fr">
+            <span class="pill">French</span>
+            <strong>l&apos;eau</strong>
+            <span class="note">contracted article before vowel</span>
+          </div>
+          <div class="preview-card ja">
+            <span class="pill">Japanese</span>
+            <strong>mizu</strong>
+            <span class="note">kana and pronunciation practice</span>
+          </div>
+        </div>
+        <div class="preview-row">
+          <b>coffee</b>
+          <span>el cafe</span>
+          <span>le cafe</span>
+          <span>koohii</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-strip">
+      <div class="feature">
+        <strong>Compare vocabulary</strong>
+        <span>See related words side by side while each language keeps its own lane.</span>
+      </div>
+      <div class="feature">
+        <strong>Build phrase patterns</strong>
+        <span>Practice real sentence frames for ordering, travel, introductions, and daily use.</span>
+      </div>
+      <div class="feature">
+        <strong>Review what is due</strong>
+        <span>Keep progress, quiz score, and review counts tied to your account.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="app locked" id="appShell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <span>MultiLang</span>
+      </div>
+      <div>
+        <div class="nav-label">Learn</div>
+        <nav class="nav" aria-label="Primary">
+          <button class="active" type="button" id="todayNav">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+            Today
+          </button>
+          <button type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 20v-6"/><path d="M18 20V10"/><path d="M6 20v-3"/><path d="M3 20h18"/></svg>
+            Progress
+          </button>
+          <button type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+            Compare
+          </button>
+          <button type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 12H3"/><path d="M12 5l7 7-7 7"/></svg>
+            Quiz
+          </button>
+        </nav>
+      </div>
+      <div class="mini-panel">
+        <strong id="sidePlan">3-language plan</strong>
+          <p id="sidePlanText">Spanish, French, and Japanese vocabulary is grouped into shared review sections.</p>
+        <button class="primary" type="button" id="tunePlan">Tune Plan</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1>Today’s Learning Board</h1>
+          <p id="topSummary">One concept, three languages, vocabulary translations, and a balanced quiz.</p>
+        </div>
+        <div class="actions">
+          <button class="icon-button" type="button" id="openSearch" aria-label="Search">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+          <button class="secondary" type="button" id="addLanguage">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            Add Language
+          </button>
+          <button class="secondary login-button" type="button" id="openAuth">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+            Log In
+          </button>
+          <div class="profile-chip" id="profileChip">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+            Alex
+          </div>
+          <button class="secondary" type="button" id="signOutButton">Sign Out</button>
+        </div>
+      </header>
+
+      <div class="search-panel" id="searchPanel">
+        <input type="search" id="searchInput" placeholder="Search vocabulary words" autocomplete="off">
+        <div class="search-results" id="searchResults" aria-live="polite"></div>
+      </div>
+
+      <section class="content">
+        <div class="dashboard-page" id="dashboardPage">
+        <section class="panel selector-panel language-panel" aria-labelledby="selector-title">
+          <div class="panel-head">
+            <h2 id="selector-title">Study languages</h2>
+            <span class="pill" id="selectedCount">3 selected</span>
+          </div>
+          <div class="choice-list" id="languageChoices"></div>
+        </section>
+
+        <section class="panel set-panel" aria-labelledby="set-title">
+          <div class="panel-head">
+            <div>
+              <h2 id="set-title">Language Sets</h2>
+              <div class="note" id="setSummary">Pick a small set to open its vocabulary list and quiz.</div>
+            </div>
+            <div class="actions">
+              <span class="pill" id="setStatus">Set 1</span>
+              <button class="secondary" type="button" id="nextSet">Next Set</button>
+            </div>
+          </div>
+          <div class="set-grid" id="setGrid"></div>
+        </section>
+        </div>
+
+        <div class="study-page hidden" id="studyPage">
+          <section class="study-page-head" aria-labelledby="studyPageTitle">
+            <div>
+              <span class="pill" id="studyPagePill">Set 1</span>
+              <h2 id="studyPageTitle">Set 1</h2>
+              <p id="studyPageSubtitle" hidden></p>
+            </div>
+            <button class="secondary" type="button" id="backToSections">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+              Back to Sets
+            </button>
+          </section>
+          <div class="study-mode-bar" role="tablist" aria-label="Study mode">
+            <button class="study-mode-button active" type="button" data-study-view="list">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+              Vocabulary List
+            </button>
+            <button class="study-mode-button" type="button" data-study-view="flashcards">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h8"/><path d="M7 13h5"/></svg>
+              Flash Cards
+            </button>
+            <button class="study-mode-button" type="button" data-study-view="phrases">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+              Common Phrases
+            </button>
+            <button class="study-mode-button" type="button" data-study-view="quiz">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Quiz
+            </button>
+          </div>
+        <div class="workspace study-area hidden study-view" id="studyArea" data-study-view-panel="list">
+          <section class="panel vocab-panel" aria-labelledby="vocab-title">
+            <div class="panel-head">
+              <h2 id="vocab-title">Vocabulary List</h2>
+              <button class="secondary" type="button" id="shuffleWords">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+                Rotate Words
+              </button>
+            </div>
+            <div class="vocab-table" id="vocabTable"></div>
+          </section>
+        </div>
+
+        <section class="panel flashcard-panel study-view hidden" id="flashcardPanel" data-study-view-panel="flashcards" aria-labelledby="flashcard-title">
+          <div class="panel-head">
+            <h2 id="flashcard-title">Flash Cards</h2>
+            <span class="pill" id="flashcardCount">1 of 25</span>
+          </div>
+          <div class="flashcard-stage">
+            <div class="flashcard-grid" id="flashcardCards"></div>
+            <p class="flashcard-hint" id="flashcardHint">Flip every language card to unlock the next word.</p>
+            <div class="flashcard-actions">
+              <button class="secondary" type="button" id="previousCard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                Previous
+              </button>
+              <button class="primary" type="button" id="nextCard">
+                Next Card
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="learning-stack study-view hidden" data-study-view-panel="phrases">
+          <section class="panel track-panel" aria-labelledby="phrase-title">
+            <div class="panel-head">
+              <h2 id="phrase-title">Phrase Builder</h2>
+              <span class="pill" id="phraseCount">3 phrase paths</span>
+            </div>
+            <div class="tabs" role="tablist" aria-label="Phrase mode">
+              <button class="active" type="button" data-phrase-index="0">Daily Use</button>
+              <button type="button" data-phrase-index="1">Polite Forms</button>
+              <button type="button" data-phrase-index="2">Travel</button>
+            </div>
+            <div class="track-grid" id="phraseGrid"></div>
+          </section>
+
+          <aside class="panel track-panel" aria-labelledby="grammar-title" hidden>
+            <div class="panel-head">
+              <h2 id="grammar-title">Grammar Patterns</h2>
+              <span class="pill" id="grammarCount">3 active</span>
+            </div>
+            <div class="rule-list" id="grammarList"></div>
+          </aside>
+        </div>
+
+        <section class="panel quiz-panel study-view hidden" id="quizPanel" data-study-view-panel="quiz" aria-labelledby="quiz-title">
+          <div class="panel-head">
+            <h2 id="quiz-title">Vocabulary Quiz</h2>
+            <span class="pill" id="quizScore">0 correct</span>
+          </div>
+          <div class="quiz-mode-bar" id="quizModeBar" aria-label="Quiz type"></div>
+          <div class="quiz-grid">
+            <div class="prompt-box">
+              <div class="prompt-content">
+                <span id="quizMode">Japanese vocabulary</span>
+                <div class="quiz-progress" aria-hidden="true">
+                  <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                </div>
+                <strong id="quizPrompt">みず</strong>
+              </div>
+              <button class="primary" type="button" id="nextQuestion">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                Next Question
+              </button>
+            </div>
+            <div class="answer-stack" id="quizAnswers"></div>
+          </div>
+          <div class="quiz-corner-score" id="quizCornerScore">0/75</div>
+        </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="auth-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="auth-card">
+      <section class="auth-visual">
+        <div>
+          <div class="brand">
+            <div class="brand-mark">M</div>
+            <span>MultiLang</span>
+          </div>
+          <h2>Save every word, phrase, and grammar pattern you master.</h2>
+          <p>An account keeps your selected languages, review schedule, quiz score, and progress history together across devices.</p>
+        </div>
+        <div class="save-preview" aria-label="Saved progress preview">
+          <div class="focus-row">
+            <div class="flag es">ES</div>
+            <div><strong>Spanish</strong><span>Vocabulary and phrase streak saved</span></div>
+            <b>58%</b>
+          </div>
+          <div class="focus-row">
+            <div class="flag fr">FR</div>
+            <div><strong>French</strong><span>Grammar patterns queued</span></div>
+            <b>51%</b>
+          </div>
+          <div class="focus-row">
+            <div class="flag ja">JA</div>
+            <div><strong>Japanese</strong><span>N5 progress backed up</span></div>
+            <b>44%</b>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-form">
+        <button class="icon-button auth-close" type="button" id="closeAuth" aria-label="Close login">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+        <div>
+          <h2 id="authTitle">Create your account</h2>
+          <p>Start free, then keep your progress synced as MultiLang grows.</p>
+        </div>
+        <div class="social-stack">
+          <div class="google-button-shell" id="googleSignInButton"></div>
+          <div class="auth-provider-message" id="googleSetupMessage">Google sign-in is loading. Use http://localhost:8766 or https://multilang.app for real login.</div>
+          <button class="social-button" type="button" data-auth-action="Apple">
+            <span class="social-mark">A</span>
+            Sign up with Apple
+          </button>
+          <button class="social-button" type="button" id="microsoftSignInButton">
+            <span class="microsoft-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            Sign up with Microsoft
+          </button>
+        </div>
+        <div class="divider">or</div>
+        <form class="field-stack" id="authForm">
+          <label>
+            Email
+            <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+          </label>
+          <label>
+            Password
+            <input type="password" id="authPassword" placeholder="Create a password" autocomplete="new-password">
+          </label>
+          <button class="primary" type="submit">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            Create Account
+          </button>
+        </form>
+        <button class="secondary" type="button" id="guestMode">Continue as Guest</button>
+        <div class="auth-footer">By continuing, you agree to save vocabulary progress and quiz results. Authentication is mocked in this prototype.</div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const DEFAULT_GOOGLE_CLIENT_ID = "987271231779-b1366sg3v2ljrrtv8jek377540ps65gn.apps.googleusercontent.com";
+    const DEFAULT_MICROSOFT_CLIENT_ID = "08e2d961-6043-48f9-9829-cd58b255e6bf";
+    let googleClientId = DEFAULT_GOOGLE_CLIENT_ID;
+    let microsoftClientId = DEFAULT_MICROSOFT_CLIENT_ID;
+
+    const languages = [
+      {
+        id: "es",
+        code: "ES",
+        name: "Spanish",
+        level: "A1-A2",
+        target: 850,
+        due: 11,
+        progress: 58,
+        color: "var(--rose)",
+        sample: "el agua",
+        translation: "water",
+        note: "Beginner core words built around everyday objects, food, travel, and common verbs."
+      },
+      {
+        id: "pt",
+        code: "PT",
+        name: "Portuguese",
+        level: "A1-A2",
+        target: 850,
+        due: 10,
+        progress: 14,
+        color: "#3f8f68",
+        sample: "a água",
+        translation: "water",
+        note: "Beginner Portuguese vocabulary for daily life, food, travel, and practical conversation."
+      },
+      {
+        id: "it",
+        code: "IT",
+        name: "Italian",
+        level: "A1-A2",
+        target: 850,
+        due: 10,
+        progress: 16,
+        color: "#2f8f6b",
+        sample: "l'acqua",
+        translation: "water",
+        note: "Beginner Italian vocabulary for food, travel, people, and daily routines."
+      },
+      {
+        id: "fr",
+        code: "FR",
+        name: "French",
+        level: "A1-A2",
+        target: 850,
+        due: 12,
+        progress: 51,
+        color: "var(--teal)",
+        sample: "l’eau",
+        translation: "water",
+        note: "A matching beginner set for high-frequency words, gender patterns, and pronunciation."
+      },
+      {
+        id: "nl",
+        code: "NL",
+        name: "Dutch",
+        level: "A1-A2",
+        target: 850,
+        due: 10,
+        progress: 12,
+        color: "#d16a4a",
+        sample: "het water",
+        translation: "water",
+        note: "Beginner Dutch vocabulary with familiar Germanic roots and practical daily words."
+      },
+      {
+        id: "sv",
+        code: "SV",
+        name: "Swedish",
+        level: "A1-A2",
+        target: 850,
+        due: 10,
+        progress: 12,
+        color: "#5177b8",
+        sample: "vatten",
+        translation: "water",
+        note: "Beginner Swedish vocabulary for everyday life, travel, and simple sentence patterns."
+      },
+      {
+        id: "de",
+        code: "DE",
+        name: "German",
+        level: "A1-A2",
+        target: 850,
+        due: 10,
+        progress: 18,
+        color: "#4f5a62",
+        sample: "das Wasser",
+        translation: "water",
+        note: "Core German vocabulary with articles and high-frequency daily words."
+      },
+      {
+        id: "ms",
+        code: "MS",
+        name: "Malay",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#2f7f8f",
+        sample: "air",
+        translation: "water",
+        note: "Beginner Malay vocabulary with practical daily words and approachable sentence patterns."
+      },
+      {
+        id: "vi",
+        code: "VI",
+        name: "Vietnamese",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#b64a54",
+        sample: "nước",
+        translation: "water",
+        note: "Beginner Vietnamese vocabulary with tone-aware pronunciation hints and daily phrases."
+      },
+      {
+        id: "el",
+        code: "EL",
+        name: "Greek",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#4b8aa8",
+        sample: "νερό",
+        translation: "water",
+        note: "Beginner Greek vocabulary with Greek script, food, travel, and daily phrases."
+      },
+      {
+        id: "ru",
+        code: "RU",
+        name: "Russian",
+        level: "A1",
+        target: 850,
+        due: 10,
+        progress: 13,
+        color: "#7b6d8d",
+        sample: "вода",
+        translation: "water",
+        note: "Beginner Russian vocabulary with Cyrillic and core noun patterns."
+      },
+      {
+        id: "he",
+        code: "HE",
+        name: "Hebrew",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#315c9b",
+        sample: "מים",
+        translation: "water",
+        note: "Beginner Hebrew vocabulary with practical daily words and right-to-left script."
+      },
+      {
+        id: "ar_sa",
+        code: "AR",
+        name: "Arabic (Saudi Arabia)",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 12,
+        color: "#5f6bd6",
+        sample: "الماء",
+        translation: "water",
+        note: "Core Arabic vocabulary using the Saudi Arabia voice setting for audio support."
+      },
+      {
+        id: "hi",
+        code: "HI",
+        name: "Hindi",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#d08a35",
+        sample: "पानी",
+        translation: "water",
+        note: "Beginner Hindi vocabulary for everyday communication."
+      },
+      {
+        id: "th",
+        code: "TH",
+        name: "Thai",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#8b5fbf",
+        sample: "น้ำ",
+        translation: "water",
+        note: "Beginner Thai vocabulary with Thai script, tones, travel words, and daily phrases."
+      },
+      {
+        id: "ko",
+        code: "KO",
+        name: "Korean",
+        level: "A1",
+        target: 800,
+        due: 9,
+        progress: 11,
+        color: "#4f7fcf",
+        sample: "물",
+        translation: "water",
+        note: "Beginner Korean vocabulary with Hangul and practical daily words."
+      },
+      {
+        id: "ja",
+        code: "JA",
+        name: "Japanese",
+        level: "N5",
+        target: 800,
+        due: 8,
+        progress: 44,
+        color: "var(--gold)",
+        sample: "みず",
+        translation: "water",
+        note: "N5-style vocabulary target with kana, basic kanji exposure, and polite daily phrases."
+      },
+      {
+        id: "zh",
+        code: "ZH",
+        name: "Chinese",
+        level: "HSK 1",
+        target: 800,
+        due: 9,
+        progress: 10,
+        color: "#c5534d",
+        sample: "水",
+        translation: "water",
+        note: "Mandarin Chinese vocabulary with characters and pronunciation hints."
+      }
+    ];
+
+    const vocabSets = [
+      {
+        concept: "water",
+        es: { word: "el agua", hint: "feminine noun with el before stressed a" },
+        fr: { word: "l’eau", hint: "contracted article before vowel" },
+        ja: { word: "みず", hint: "mizu" }
+      },
+      {
+        concept: "coffee",
+        es: { word: "el café", hint: "accent marks final stress" },
+        fr: { word: "le café", hint: "same spelling, different rhythm" },
+        ja: { word: "コーヒー", hint: "koohii, loanword in katakana" }
+      },
+      {
+        concept: "friend",
+        es: { word: "amigo / amiga", hint: "changes with gender" },
+        fr: { word: "ami / amie", hint: "same sound in many contexts" },
+        ja: { word: "ともだち", hint: "tomodachi" }
+      },
+      {
+        concept: "today",
+        es: { word: "hoy", hint: "short, high-frequency time word" },
+        fr: { word: "aujourd’hui", hint: "long single expression" },
+        ja: { word: "きょう", hint: "kyou" }
+      },
+      {
+        concept: "to eat",
+        es: { word: "comer", hint: "regular -er verb" },
+        fr: { word: "manger", hint: "regular -er verb" },
+        ja: { word: "たべる", hint: "taberu" }
+      }
+    ];
+
+    const phraseSets = [
+      {
+        intent: "Order politely",
+        es: { phrase: "Quisiera un cafe, por favor.", meaning: "I would like a coffee, please.", note: "Conditional verb softens the request." },
+        fr: { phrase: "Je voudrais un cafe, s'il vous plait.", meaning: "I would like a coffee, please.", note: "A close match to Spanish structure." },
+        ja: { phrase: "Koohii o kudasai.", meaning: "Please give me a coffee.", note: "Uses object marker plus a polite request." }
+      },
+      {
+        intent: "Ask location",
+        es: { phrase: "Donde esta el bano?", meaning: "Where is the bathroom?", note: "estar for location." },
+        fr: { phrase: "Ou sont les toilettes?", meaning: "Where are the restrooms?", note: "Plural noun is the natural phrase." },
+        ja: { phrase: "Toire wa doko desu ka?", meaning: "Where is the toilet?", note: "wa marks the topic being asked about." }
+      },
+      {
+        intent: "Introduce self",
+        es: { phrase: "Me llamo Alex.", meaning: "My name is Alex.", note: "Reflexive pattern: I call myself." },
+        fr: { phrase: "Je m'appelle Alex.", meaning: "My name is Alex.", note: "Very similar reflexive structure." },
+        ja: { phrase: "Watashi wa Alex desu.", meaning: "I am Alex.", note: "Topic plus polite identity statement." }
+      }
+    ];
+
+    const grammarSets = {
+      es: [
+        { title: "Articles and gender", body: "Most nouns use el or la, and adjectives often change to match." },
+        { title: "Polite requests", body: "Quisiera and podria make direct needs sound softer." },
+        { title: "Verb families", body: "Regular -ar, -er, and -ir endings create predictable practice groups." }
+      ],
+      fr: [
+        { title: "Articles and gender", body: "Le, la, and l' appear constantly, so words are learned with articles attached." },
+        { title: "Polite requests", body: "Je voudrais is the beginner-friendly phrase frame for asking politely." },
+        { title: "Sound linking", body: "Pronunciation changes when words flow together, especially before vowels." }
+      ],
+      pt: [
+        { title: "Articles and gender", body: "Portuguese nouns pair with o or a, and adjectives often change to match." },
+        { title: "Polite requests", body: "Por favor and eu gostaria support early ordering and travel phrases." },
+        { title: "Verb families", body: "Regular -ar, -er, and -ir verbs create useful beginner patterns." }
+      ],
+      ja: [
+        { title: "Particles", body: "Small words like wa, o, and ka mark topic, object, and questions." },
+        { title: "Polite endings", body: "Desu and -masu forms keep early sentences useful and socially safe." },
+        { title: "Writing systems", body: "Kana supports core reading while basic kanji is introduced gradually." }
+      ]
+    };
+
+    Object.assign(grammarSets, {
+      ar_sa: [
+        { title: "Root patterns", body: "Arabic words often connect through shared roots and patterns." },
+        { title: "Gender", body: "Many nouns and adjectives have masculine and feminine forms." },
+        { title: "Saudi Arabia audio", body: "Audio uses the Arabic (Saudi Arabia) voice setting when the browser has it available." }
+      ],
+      de: [
+        { title: "Articles", body: "Learn nouns with der, die, or das from the beginning." },
+        { title: "Verb position", body: "German statements and questions rely on predictable verb placement." },
+        { title: "Cases", body: "Early vocabulary benefits from seeing nouns in simple sentence roles." }
+      ],
+      nl: [
+        { title: "Articles", body: "Dutch nouns often pair with de or het from the beginning." },
+        { title: "Verb position", body: "Simple Dutch sentences use a predictable verb-second pattern." },
+        { title: "Familiar roots", body: "Many Dutch words connect clearly to English and German vocabulary." }
+      ],
+      sv: [
+        { title: "Articles", body: "Swedish uses common and neuter noun patterns with attached definite endings." },
+        { title: "Word order", body: "Main clauses keep a steady verb-second rhythm." },
+        { title: "Useful phrases", body: "Tack, ursakta, and var support daily beginner conversation." }
+      ],
+      it: [
+        { title: "Articles and gender", body: "Italian nouns usually pair with il, la, l', or un/una." },
+        { title: "Verb endings", body: "Common -are, -ere, and -ire verbs create useful practice families." },
+        { title: "Polite requests", body: "Per favore and vorrei are key early request tools." }
+      ],
+      zh: [
+        { title: "Characters and pinyin", body: "Words are shown with characters while hints support pronunciation." },
+        { title: "Word order", body: "Basic Mandarin sentences often follow a familiar subject-verb-object order." },
+        { title: "Measure words", body: "Counters become important as nouns and quantities grow." }
+      ],
+      ko: [
+        { title: "Hangul", body: "Korean vocabulary is learned with Hangul from the start." },
+        { title: "Polite endings", body: "Early sentences use polite endings such as -yo." },
+        { title: "Particles", body: "Small markers help show topic, subject, and object roles." }
+      ],
+      hi: [
+        { title: "Devanagari", body: "Hindi words are shown in Devanagari with pronunciation hints." },
+        { title: "Gender", body: "Many nouns and adjectives interact with masculine and feminine patterns." },
+        { title: "Need patterns", body: "Mujhe ... chahiye is a useful early phrase frame." }
+      ],
+      vi: [
+        { title: "Tones", body: "Vietnamese words use tone marks that change meaning and pronunciation." },
+        { title: "Word order", body: "Basic sentences often follow a familiar subject-verb-object order." },
+        { title: "Classifiers", body: "Common classifiers appear with nouns and quantities as vocabulary grows." }
+      ],
+      th: [
+        { title: "Thai script", body: "Thai vocabulary is shown in Thai script with pronunciation hints." },
+        { title: "Tones", body: "Tone practice is important because tone can change word meaning." },
+        { title: "Particles", body: "Polite particles such as khrap and kha support daily conversation." }
+      ],
+      ms: [
+        { title: "Word order", body: "Malay basic sentences often follow a clear subject-verb-object order." },
+        { title: "No noun gender", body: "Malay nouns do not use grammatical gender, which helps early vocabulary." },
+        { title: "Affixes", body: "Prefixes and suffixes gradually expand common root words." }
+      ],
+      ru: [
+        { title: "Cyrillic", body: "Russian vocabulary is learned with Cyrillic from the beginning." },
+        { title: "Gender", body: "Nouns are commonly masculine, feminine, or neuter." },
+        { title: "Cases", body: "Early practice can introduce cases gently through common phrases." }
+      ],
+      he: [
+        { title: "Hebrew script", body: "Hebrew words are shown in Hebrew script with pronunciation hints." },
+        { title: "Gender", body: "Many nouns, adjectives, and verbs connect to masculine and feminine forms." },
+        { title: "Word order", body: "Early Hebrew sentences often use practical subject-verb-object patterns." }
+      ],
+      el: [
+        { title: "Greek alphabet", body: "Greek vocabulary is learned with Greek letters from the beginning." },
+        { title: "Articles and gender", body: "Nouns usually pair with ο, η, or το as gender cues." },
+        { title: "Verb basics", body: "Common present-tense verbs support daily sentence building." }
+      ]
+    });
+
+    const studyVocabSets = [
+      { concept: "water", mode: "core", es: { word: "el agua", hint: "feminine noun; use el before stressed a" }, fr: { word: "l'eau", hint: "contracted article before a vowel" }, ja: { word: "水", hint: "mizu; common kanji" } },
+      { concept: "coffee", mode: "core", es: { word: "el cafe", hint: "masculine noun; final stress" }, fr: { word: "le cafe", hint: "similar spelling with French rhythm" }, ja: { word: "コーヒー", hint: "koohii; katakana loanword" } },
+      { concept: "bread", mode: "core", es: { word: "el pan", hint: "short everyday food word" }, fr: { word: "le pain", hint: "nasal vowel in pronunciation" }, ja: { word: "パン", hint: "pan; katakana loanword" } },
+      { concept: "milk", mode: "core", es: { word: "la leche", hint: "feminine noun" }, fr: { word: "le lait", hint: "final t is usually silent" }, ja: { word: "牛乳", hint: "gyuunyuu; cow milk" } },
+      { concept: "please", mode: "core", es: { word: "por favor", hint: "works for most polite requests" }, fr: { word: "s'il vous plait", hint: "formal polite request phrase" }, ja: { word: "お願いします", hint: "onegai shimasu; polite request" } },
+      { concept: "where", mode: "core", es: { word: "donde", hint: "question word for location" }, fr: { word: "ou", hint: "question word for location" }, ja: { word: "どこ", hint: "doko; location question word" } },
+      { concept: "station", mode: "core", es: { word: "la estacion", hint: "transportation place noun" }, fr: { word: "la gare", hint: "train station" }, ja: { word: "駅", hint: "eki; train station" } },
+      { concept: "ticket", mode: "core", es: { word: "el boleto", hint: "common in Latin America" }, fr: { word: "le billet", hint: "ticket or banknote depending context" }, ja: { word: "切符", hint: "kippu; ticket" } },
+      { concept: "hello", mode: "core", es: { word: "hola", hint: "standard greeting" }, fr: { word: "bonjour", hint: "daytime greeting" }, ja: { word: "こんにちは", hint: "konnichiwa; daytime hello" } },
+      { concept: "goodbye", mode: "core", es: { word: "adios", hint: "general goodbye" }, fr: { word: "au revoir", hint: "standard goodbye" }, ja: { word: "さようなら", hint: "sayounara; farewell" } },
+      { concept: "yes", mode: "core", es: { word: "si", hint: "affirmative answer" }, fr: { word: "oui", hint: "affirmative answer" }, ja: { word: "はい", hint: "hai; yes or acknowledgment" } },
+      { concept: "no", mode: "core", es: { word: "no", hint: "negative answer" }, fr: { word: "non", hint: "negative answer" }, ja: { word: "いいえ", hint: "iie; polite no" } },
+      { concept: "thank you", mode: "core", es: { word: "gracias", hint: "everyday thanks" }, fr: { word: "merci", hint: "everyday thanks" }, ja: { word: "ありがとう", hint: "arigatou; casual thanks" } },
+      { concept: "excuse me", mode: "core", es: { word: "perdon", hint: "apology or attention-getter" }, fr: { word: "pardon", hint: "excuse me or sorry" }, ja: { word: "すみません", hint: "sumimasen; excuse me or sorry" } },
+      { concept: "bathroom", mode: "core", es: { word: "el bano", hint: "bathroom or restroom" }, fr: { word: "les toilettes", hint: "restroom; usually plural" }, ja: { word: "トイレ", hint: "toire; katakana loanword" } },
+      { concept: "house", mode: "core", es: { word: "la casa", hint: "house or home" }, fr: { word: "la maison", hint: "house or home" }, ja: { word: "家", hint: "ie; house or home" } },
+      { concept: "school", mode: "core", es: { word: "la escuela", hint: "school" }, fr: { word: "l'ecole", hint: "school" }, ja: { word: "学校", hint: "gakkou; school" } },
+      { concept: "work", mode: "core", es: { word: "el trabajo", hint: "job or work" }, fr: { word: "le travail", hint: "job or work" }, ja: { word: "仕事", hint: "shigoto; job or work" } },
+      { concept: "friend", mode: "core", es: { word: "amigo/amiga", hint: "changes with gender" }, fr: { word: "ami/amie", hint: "friend; spelling changes with gender" }, ja: { word: "友達", hint: "tomodachi; friend" } },
+      { concept: "family", mode: "core", es: { word: "la familia", hint: "family" }, fr: { word: "la famille", hint: "family" }, ja: { word: "家族", hint: "kazoku; family" } },
+      { concept: "person", mode: "core", es: { word: "la persona", hint: "person" }, fr: { word: "la personne", hint: "person" }, ja: { word: "人", hint: "hito; person" } },
+      { concept: "food", mode: "core", es: { word: "la comida", hint: "food or meal" }, fr: { word: "la nourriture", hint: "food" }, ja: { word: "食べ物", hint: "tabemono; food" } },
+      { concept: "money", mode: "core", es: { word: "el dinero", hint: "money" }, fr: { word: "l'argent", hint: "money or silver" }, ja: { word: "お金", hint: "okane; money" } },
+      { concept: "time", mode: "core", es: { word: "el tiempo", hint: "time or weather by context" }, fr: { word: "le temps", hint: "time or weather by context" }, ja: { word: "時間", hint: "jikan; time or duration" } },
+      { concept: "now", mode: "core", es: { word: "ahora", hint: "now" }, fr: { word: "maintenant", hint: "now" }, ja: { word: "今", hint: "ima; now" } },
+      { concept: "bookstore", mode: "false", es: { word: "la libreria", hint: "bookstore; not a library" }, fr: { word: "la librairie", hint: "bookstore; library is bibliotheque" }, ja: { word: "本屋", hint: "honya; book shop" } },
+      { concept: "currently", mode: "false", es: { word: "actualmente", hint: "means currently, not actually" }, fr: { word: "actuellement", hint: "means currently, not actually" }, ja: { word: "今", hint: "ima; now/currently" } },
+      { concept: "sensitive", mode: "false", es: { word: "sensible", hint: "means sensitive; sensible is sensato" }, fr: { word: "sensible", hint: "means sensitive; sensible is raisonnable" }, ja: { word: "敏感", hint: "binkan; sensitive" } },
+      { concept: "embarrassed", mode: "false", es: { word: "avergonzado/a", hint: "embarazada means pregnant" }, fr: { word: "gene/e", hint: "awkward, bothered, or embarrassed" }, ja: { word: "恥ずかしい", hint: "hazukashii; embarrassed or shy" } },
+      { concept: "to eat", mode: "review", es: { word: "comer", hint: "regular -er verb" }, fr: { word: "manger", hint: "regular -er verb with spelling changes" }, ja: { word: "食べる", hint: "taberu; dictionary form" } },
+      { concept: "to drink", mode: "review", es: { word: "beber", hint: "regular -er verb" }, fr: { word: "boire", hint: "irregular but essential verb" }, ja: { word: "飲む", hint: "nomu; dictionary form" } },
+      { concept: "today", mode: "review", es: { word: "hoy", hint: "short, high-frequency time word" }, fr: { word: "aujourd'hui", hint: "common time expression" }, ja: { word: "今日", hint: "kyou; today" } },
+      { concept: "tomorrow", mode: "review", es: { word: "manana", hint: "tomorrow; also morning by context" }, fr: { word: "demain", hint: "tomorrow" }, ja: { word: "明日", hint: "ashita; tomorrow" } }
+    ];
+
+    const additionalVocabTranslations = {
+      "water": { ar: { word: "الماء", hint: "al-maa; water" }, de: { word: "das Wasser", hint: "neuter noun" }, it: { word: "l'acqua", hint: "feminine noun" }, zh: { word: "水", hint: "shui; water" }, ko: { word: "물", hint: "mul; water" }, hi: { word: "पानी", hint: "paani; water" }, ru: { word: "вода", hint: "voda; water" }, sw: { word: "maji", hint: "water" } },
+      "coffee": { ar: { word: "القهوة", hint: "al-qahwa; coffee" }, de: { word: "der Kaffee", hint: "masculine noun" }, it: { word: "il caffe", hint: "coffee" }, zh: { word: "咖啡", hint: "kafei; coffee" }, ko: { word: "커피", hint: "keopi; coffee" }, hi: { word: "कॉफी", hint: "kofi; coffee" }, ru: { word: "кофе", hint: "kofe; coffee" }, sw: { word: "kahawa", hint: "coffee" } },
+      "bread": { ar: { word: "الخبز", hint: "al-khubz; bread" }, de: { word: "das Brot", hint: "neuter noun" }, it: { word: "il pane", hint: "bread" }, zh: { word: "面包", hint: "mianbao; bread" }, ko: { word: "빵", hint: "ppang; bread" }, hi: { word: "रोटी", hint: "roti; bread" }, ru: { word: "хлеб", hint: "khleb; bread" }, sw: { word: "mkate", hint: "bread" } },
+      "milk": { ar: { word: "الحليب", hint: "al-haleeb; milk" }, de: { word: "die Milch", hint: "feminine noun" }, it: { word: "il latte", hint: "milk" }, zh: { word: "牛奶", hint: "niunai; milk" }, ko: { word: "우유", hint: "uyu; milk" }, hi: { word: "दूध", hint: "doodh; milk" }, ru: { word: "молоко", hint: "moloko; milk" }, sw: { word: "maziwa", hint: "milk" } },
+      "please": { ar: { word: "من فضلك", hint: "min fadlik; please" }, de: { word: "bitte", hint: "please" }, it: { word: "per favore", hint: "please" }, zh: { word: "请", hint: "qing; please" }, ko: { word: "제발", hint: "jebal; please" }, hi: { word: "कृपया", hint: "kripaya; please" }, ru: { word: "пожалуйста", hint: "pozhaluysta; please" }, sw: { word: "tafadhali", hint: "please" } },
+      "where": { ar: { word: "أين", hint: "ayna; where" }, de: { word: "wo", hint: "where" }, it: { word: "dove", hint: "where" }, zh: { word: "哪里", hint: "nali; where" }, ko: { word: "어디", hint: "eodi; where" }, hi: { word: "कहाँ", hint: "kahaan; where" }, ru: { word: "где", hint: "gde; where" }, sw: { word: "wapi", hint: "where" } },
+      "station": { ar: { word: "المحطة", hint: "al-mahatta; station" }, de: { word: "der Bahnhof", hint: "train station" }, it: { word: "la stazione", hint: "station" }, zh: { word: "车站", hint: "chezhan; station" }, ko: { word: "역", hint: "yeok; station" }, hi: { word: "स्टेशन", hint: "steshan; station" }, ru: { word: "станция", hint: "stantsiya; station" }, sw: { word: "kituo", hint: "station or stop" } },
+      "ticket": { ar: { word: "التذكرة", hint: "al-tadhkira; ticket" }, de: { word: "die Fahrkarte", hint: "travel ticket" }, it: { word: "il biglietto", hint: "ticket" }, zh: { word: "票", hint: "piao; ticket" }, ko: { word: "표", hint: "pyo; ticket" }, hi: { word: "टिकट", hint: "tikat; ticket" }, ru: { word: "билет", hint: "bilet; ticket" }, sw: { word: "tiketi", hint: "ticket" } },
+      "hello": { ar: { word: "مرحبا", hint: "marhaban; hello" }, de: { word: "hallo", hint: "hello" }, it: { word: "ciao", hint: "hello or goodbye" }, zh: { word: "你好", hint: "ni hao; hello" }, ko: { word: "안녕하세요", hint: "annyeonghaseyo; hello" }, hi: { word: "नमस्ते", hint: "namaste; hello" }, ru: { word: "привет", hint: "privet; hello" }, sw: { word: "habari", hint: "hello/how are things" } },
+      "goodbye": { ar: { word: "وداعا", hint: "wada'an; goodbye" }, de: { word: "auf Wiedersehen", hint: "goodbye" }, it: { word: "arrivederci", hint: "goodbye" }, zh: { word: "再见", hint: "zaijian; goodbye" }, ko: { word: "안녕히 가세요", hint: "annyeonghi gaseyo; goodbye" }, hi: { word: "अलविदा", hint: "alvida; goodbye" }, ru: { word: "до свидания", hint: "do svidaniya; goodbye" }, sw: { word: "kwaheri", hint: "goodbye" } },
+      "yes": { ar: { word: "نعم", hint: "na'am; yes" }, de: { word: "ja", hint: "yes" }, it: { word: "si", hint: "yes" }, zh: { word: "是", hint: "shi; yes/is" }, ko: { word: "네", hint: "ne; yes" }, hi: { word: "हाँ", hint: "haan; yes" }, ru: { word: "да", hint: "da; yes" }, sw: { word: "ndiyo", hint: "yes" } },
+      "no": { ar: { word: "لا", hint: "la; no" }, de: { word: "nein", hint: "no" }, it: { word: "no", hint: "no" }, zh: { word: "不", hint: "bu; no/not" }, ko: { word: "아니요", hint: "aniyo; no" }, hi: { word: "नहीं", hint: "nahin; no" }, ru: { word: "нет", hint: "nyet; no" }, sw: { word: "hapana", hint: "no" } },
+      "thank you": { ar: { word: "شكرا", hint: "shukran; thank you" }, de: { word: "danke", hint: "thanks" }, it: { word: "grazie", hint: "thanks" }, zh: { word: "谢谢", hint: "xiexie; thank you" }, ko: { word: "감사합니다", hint: "gamsahamnida; thank you" }, hi: { word: "धन्यवाद", hint: "dhanyavaad; thank you" }, ru: { word: "спасибо", hint: "spasibo; thank you" }, sw: { word: "asante", hint: "thank you" } },
+      "excuse me": { ar: { word: "عفوا", hint: "afwan; excuse me" }, de: { word: "Entschuldigung", hint: "excuse me/sorry" }, it: { word: "scusi", hint: "excuse me" }, zh: { word: "不好意思", hint: "bu hao yisi; excuse me" }, ko: { word: "실례합니다", hint: "sillyehamnida; excuse me" }, hi: { word: "माफ कीजिए", hint: "maaf kijiye; excuse me" }, ru: { word: "извините", hint: "izvinite; excuse me" }, sw: { word: "samahani", hint: "excuse me/sorry" } },
+      "bathroom": { ar: { word: "الحمام", hint: "al-hammam; bathroom" }, de: { word: "die Toilette", hint: "toilet/restroom" }, it: { word: "il bagno", hint: "bathroom" }, zh: { word: "洗手间", hint: "xishoujian; restroom" }, ko: { word: "화장실", hint: "hwajangsil; bathroom" }, hi: { word: "शौचालय", hint: "shauchalay; restroom" }, ru: { word: "туалет", hint: "tualet; restroom" }, sw: { word: "choo", hint: "toilet/restroom" } },
+      "house": { ar: { word: "البيت", hint: "al-bayt; house" }, de: { word: "das Haus", hint: "house" }, it: { word: "la casa", hint: "house" }, zh: { word: "房子", hint: "fangzi; house" }, ko: { word: "집", hint: "jip; house" }, hi: { word: "घर", hint: "ghar; house" }, ru: { word: "дом", hint: "dom; house" }, sw: { word: "nyumba", hint: "house" } },
+      "school": { ar: { word: "المدرسة", hint: "al-madrasa; school" }, de: { word: "die Schule", hint: "school" }, it: { word: "la scuola", hint: "school" }, zh: { word: "学校", hint: "xuexiao; school" }, ko: { word: "학교", hint: "hakgyo; school" }, hi: { word: "स्कूल", hint: "skool; school" }, ru: { word: "школа", hint: "shkola; school" }, sw: { word: "shule", hint: "school" } },
+      "work": { ar: { word: "العمل", hint: "al-amal; work" }, de: { word: "die Arbeit", hint: "work/job" }, it: { word: "il lavoro", hint: "work/job" }, zh: { word: "工作", hint: "gongzuo; work" }, ko: { word: "일", hint: "il; work" }, hi: { word: "काम", hint: "kaam; work" }, ru: { word: "работа", hint: "rabota; work" }, sw: { word: "kazi", hint: "work" } },
+      "friend": { ar: { word: "صديق", hint: "sadiq; friend" }, de: { word: "der Freund", hint: "friend" }, it: { word: "l'amico", hint: "friend" }, zh: { word: "朋友", hint: "pengyou; friend" }, ko: { word: "친구", hint: "chingu; friend" }, hi: { word: "दोस्त", hint: "dost; friend" }, ru: { word: "друг", hint: "drug; friend" }, sw: { word: "rafiki", hint: "friend" } },
+      "family": { ar: { word: "العائلة", hint: "al-aaila; family" }, de: { word: "die Familie", hint: "family" }, it: { word: "la famiglia", hint: "family" }, zh: { word: "家人", hint: "jiaren; family" }, ko: { word: "가족", hint: "gajok; family" }, hi: { word: "परिवार", hint: "parivaar; family" }, ru: { word: "семья", hint: "semya; family" }, sw: { word: "familia", hint: "family" } },
+      "person": { ar: { word: "شخص", hint: "shakhs; person" }, de: { word: "die Person", hint: "person" }, it: { word: "la persona", hint: "person" }, zh: { word: "人", hint: "ren; person" }, ko: { word: "사람", hint: "saram; person" }, hi: { word: "व्यक्ति", hint: "vyakti; person" }, ru: { word: "человек", hint: "chelovek; person" }, sw: { word: "mtu", hint: "person" } },
+      "food": { ar: { word: "الطعام", hint: "al-ta'am; food" }, de: { word: "das Essen", hint: "food/meal" }, it: { word: "il cibo", hint: "food" }, zh: { word: "食物", hint: "shiwu; food" }, ko: { word: "음식", hint: "eumsik; food" }, hi: { word: "खाना", hint: "khaana; food" }, ru: { word: "еда", hint: "yeda; food" }, sw: { word: "chakula", hint: "food" } },
+      "money": { ar: { word: "المال", hint: "al-mal; money" }, de: { word: "das Geld", hint: "money" }, it: { word: "i soldi", hint: "money" }, zh: { word: "钱", hint: "qian; money" }, ko: { word: "돈", hint: "don; money" }, hi: { word: "पैसा", hint: "paisa; money" }, ru: { word: "деньги", hint: "dengi; money" }, sw: { word: "pesa", hint: "money" } },
+      "time": { ar: { word: "الوقت", hint: "al-waqt; time" }, de: { word: "die Zeit", hint: "time" }, it: { word: "il tempo", hint: "time/weather" }, zh: { word: "时间", hint: "shijian; time" }, ko: { word: "시간", hint: "sigan; time" }, hi: { word: "समय", hint: "samay; time" }, ru: { word: "время", hint: "vremya; time" }, sw: { word: "wakati", hint: "time" } },
+      "now": { ar: { word: "الآن", hint: "al-aan; now" }, de: { word: "jetzt", hint: "now" }, it: { word: "adesso", hint: "now" }, zh: { word: "现在", hint: "xianzai; now" }, ko: { word: "지금", hint: "jigeum; now" }, hi: { word: "अभी", hint: "abhi; now" }, ru: { word: "сейчас", hint: "seychas; now" }, sw: { word: "sasa", hint: "now" } },
+      "bookstore": { ar: { word: "مكتبة", hint: "maktaba; bookstore/library" }, de: { word: "die Buchhandlung", hint: "bookstore" }, it: { word: "la libreria", hint: "bookstore" }, zh: { word: "书店", hint: "shudian; bookstore" }, ko: { word: "서점", hint: "seojeom; bookstore" }, hi: { word: "किताबों की दुकान", hint: "kitabon ki dukaan; bookstore" }, ru: { word: "книжный магазин", hint: "bookstore" }, sw: { word: "duka la vitabu", hint: "bookstore" } },
+      "currently": { ar: { word: "حاليا", hint: "haliyan; currently" }, de: { word: "derzeit", hint: "currently" }, it: { word: "attualmente", hint: "currently" }, zh: { word: "目前", hint: "muqian; currently" }, ko: { word: "현재", hint: "hyeonjae; currently" }, hi: { word: "वर्तमान में", hint: "vartamaan mein; currently" }, ru: { word: "сейчас", hint: "currently/now" }, sw: { word: "kwa sasa", hint: "currently" } },
+      "sensitive": { ar: { word: "حساس", hint: "hassas; sensitive" }, de: { word: "empfindlich", hint: "sensitive" }, it: { word: "sensibile", hint: "sensitive" }, zh: { word: "敏感", hint: "mingan; sensitive" }, ko: { word: "민감한", hint: "mingamhan; sensitive" }, hi: { word: "संवेदनशील", hint: "samvedansheel; sensitive" }, ru: { word: "чувствительный", hint: "sensitive" }, sw: { word: "nyeti", hint: "sensitive" } },
+      "embarrassed": { ar: { word: "محرج", hint: "muhraj; embarrassed" }, de: { word: "verlegen", hint: "embarrassed" }, it: { word: "imbarazzato/a", hint: "embarrassed" }, zh: { word: "尴尬", hint: "ganga; embarrassed/awkward" }, ko: { word: "당황한", hint: "danghwanghan; embarrassed" }, hi: { word: "शर्मिंदा", hint: "sharminda; embarrassed" }, ru: { word: "смущённый", hint: "embarrassed" }, sw: { word: "aibu", hint: "embarrassment/shame" } },
+      "to eat": { ar: { word: "يأكل", hint: "ya'kul; to eat" }, de: { word: "essen", hint: "to eat" }, it: { word: "mangiare", hint: "to eat" }, zh: { word: "吃", hint: "chi; to eat" }, ko: { word: "먹다", hint: "meokda; to eat" }, hi: { word: "खाना", hint: "khaana; to eat" }, ru: { word: "есть", hint: "to eat" }, sw: { word: "kula", hint: "to eat" } },
+      "to drink": { ar: { word: "يشرب", hint: "yashrab; to drink" }, de: { word: "trinken", hint: "to drink" }, it: { word: "bere", hint: "to drink" }, zh: { word: "喝", hint: "he; to drink" }, ko: { word: "마시다", hint: "masida; to drink" }, hi: { word: "पीना", hint: "peena; to drink" }, ru: { word: "пить", hint: "to drink" }, sw: { word: "kunywa", hint: "to drink" } },
+      "today": { ar: { word: "اليوم", hint: "al-yawm; today" }, de: { word: "heute", hint: "today" }, it: { word: "oggi", hint: "today" }, zh: { word: "今天", hint: "jintian; today" }, ko: { word: "오늘", hint: "oneul; today" }, hi: { word: "आज", hint: "aaj; today" }, ru: { word: "сегодня", hint: "today" }, sw: { word: "leo", hint: "today" } },
+      "tomorrow": { ar: { word: "غدا", hint: "ghadan; tomorrow" }, de: { word: "morgen", hint: "tomorrow" }, it: { word: "domani", hint: "tomorrow" }, zh: { word: "明天", hint: "mingtian; tomorrow" }, ko: { word: "내일", hint: "naeil; tomorrow" }, hi: { word: "कल", hint: "kal; tomorrow/yesterday" }, ru: { word: "завтра", hint: "tomorrow" }, sw: { word: "kesho", hint: "tomorrow" } }
+    };
+
+    studyVocabSets.forEach(row => {
+      Object.assign(row, additionalVocabTranslations[row.concept] || {});
+    });
+
+    const hebrewGreekVocab = {
+      "water": { he: { word: "מים", hint: "mayim; water" }, el: { word: "νερό", hint: "nero; water" } },
+      "coffee": { he: { word: "קפה", hint: "kafe; coffee" }, el: { word: "καφές", hint: "kafes; coffee" } },
+      "bread": { he: { word: "לחם", hint: "lechem; bread" }, el: { word: "ψωμί", hint: "psomi; bread" } },
+      "milk": { he: { word: "חלב", hint: "chalav; milk" }, el: { word: "γάλα", hint: "gala; milk" } },
+      "please": { he: { word: "בבקשה", hint: "bevakasha; please" }, el: { word: "παρακαλώ", hint: "parakalo; please" } },
+      "where": { he: { word: "איפה", hint: "eifo; where" }, el: { word: "πού", hint: "pou; where" } },
+      "station": { he: { word: "תחנה", hint: "tachana; station" }, el: { word: "σταθμός", hint: "stathmos; station" } },
+      "ticket": { he: { word: "כרטיס", hint: "kartis; ticket" }, el: { word: "εισιτήριο", hint: "eisitirio; ticket" } },
+      "hello": { he: { word: "שלום", hint: "shalom; hello" }, el: { word: "γεια σας", hint: "ya sas; hello" } },
+      "goodbye": { he: { word: "להתראות", hint: "lehitraot; goodbye" }, el: { word: "αντίο", hint: "adio; goodbye" } },
+      "yes": { he: { word: "כן", hint: "ken; yes" }, el: { word: "ναι", hint: "ne; yes" } },
+      "no": { he: { word: "לא", hint: "lo; no" }, el: { word: "όχι", hint: "ochi; no" } },
+      "thank you": { he: { word: "תודה", hint: "toda; thank you" }, el: { word: "ευχαριστώ", hint: "efcharisto; thank you" } },
+      "excuse me": { he: { word: "סליחה", hint: "slicha; excuse me/sorry" }, el: { word: "συγγνώμη", hint: "sygnomi; excuse me/sorry" } },
+      "bathroom": { he: { word: "שירותים", hint: "sherutim; bathroom/restroom" }, el: { word: "τουαλέτα", hint: "toualeta; bathroom" } },
+      "house": { he: { word: "בית", hint: "bayit; house" }, el: { word: "σπίτι", hint: "spiti; house" } },
+      "school": { he: { word: "בית ספר", hint: "beit sefer; school" }, el: { word: "σχολείο", hint: "scholeio; school" } },
+      "work": { he: { word: "עבודה", hint: "avoda; work" }, el: { word: "δουλειά", hint: "douleia; work" } },
+      "friend": { he: { word: "חבר", hint: "chaver; friend" }, el: { word: "φίλος", hint: "filos; friend" } },
+      "family": { he: { word: "משפחה", hint: "mishpacha; family" }, el: { word: "οικογένεια", hint: "oikogeneia; family" } },
+      "person": { he: { word: "אדם", hint: "adam; person" }, el: { word: "άνθρωπος", hint: "anthropos; person" } },
+      "food": { he: { word: "אוכל", hint: "ochel; food" }, el: { word: "φαγητό", hint: "fagito; food" } },
+      "money": { he: { word: "כסף", hint: "kesef; money" }, el: { word: "χρήματα", hint: "chrimata; money" } },
+      "time": { he: { word: "זמן", hint: "zman; time" }, el: { word: "χρόνος", hint: "chronos; time" } },
+      "now": { he: { word: "עכשיו", hint: "achshav; now" }, el: { word: "τώρα", hint: "tora; now" } },
+      "bookstore": { he: { word: "חנות ספרים", hint: "chanut sfarim; bookstore" }, el: { word: "βιβλιοπωλείο", hint: "vivliopoleio; bookstore" } },
+      "currently": { he: { word: "כרגע", hint: "karega; currently" }, el: { word: "αυτή τη στιγμή", hint: "afti ti stigmi; currently" } },
+      "sensitive": { he: { word: "רגיש", hint: "ragish; sensitive" }, el: { word: "ευαίσθητος", hint: "evaisthitos; sensitive" } },
+      "embarrassed": { he: { word: "נבוך", hint: "navoch; embarrassed" }, el: { word: "ντροπιασμένος", hint: "dropiasmenos; embarrassed" } },
+      "to eat": { he: { word: "לאכול", hint: "le'echol; to eat" }, el: { word: "τρώω", hint: "troo; to eat" } },
+      "to drink": { he: { word: "לשתות", hint: "lishtot; to drink" }, el: { word: "πίνω", hint: "pino; to drink" } },
+      "today": { he: { word: "היום", hint: "hayom; today" }, el: { word: "σήμερα", hint: "simera; today" } },
+      "tomorrow": { he: { word: "מחר", hint: "machar; tomorrow" }, el: { word: "αύριο", hint: "avrio; tomorrow" } }
+    };
+
+    studyVocabSets.forEach(row => {
+      Object.assign(row, hebrewGreekVocab[row.concept] || {});
+    });
+
+    const addedLanguageVocab = {
+      "water": { pt: { word: "a agua", hint: "water" }, sv: { word: "vatten", hint: "water" }, vi: { word: "nuoc", hint: "water" }, th: { word: "น้ำ", hint: "nam; water" }, ms: { word: "air", hint: "water" }, nl: { word: "het water", hint: "water" } },
+      "coffee": { pt: { word: "o cafe", hint: "coffee" }, sv: { word: "kaffe", hint: "coffee" }, vi: { word: "ca phe", hint: "coffee" }, th: { word: "กาแฟ", hint: "ga-fae; coffee" }, ms: { word: "kopi", hint: "coffee" }, nl: { word: "de koffie", hint: "coffee" } },
+      "bread": { pt: { word: "o pao", hint: "bread" }, sv: { word: "brod", hint: "bread" }, vi: { word: "banh mi", hint: "bread" }, th: { word: "ขนมปัง", hint: "khanom pang; bread" }, ms: { word: "roti", hint: "bread" }, nl: { word: "het brood", hint: "bread" } },
+      "milk": { pt: { word: "o leite", hint: "milk" }, sv: { word: "mjolk", hint: "milk" }, vi: { word: "sua", hint: "milk" }, th: { word: "นม", hint: "nom; milk" }, ms: { word: "susu", hint: "milk" }, nl: { word: "de melk", hint: "milk" } },
+      "please": { pt: { word: "por favor", hint: "please" }, sv: { word: "snalla", hint: "please" }, vi: { word: "lam on", hint: "please" }, th: { word: "กรุณา", hint: "karuna; please" }, ms: { word: "tolong", hint: "please/help" }, nl: { word: "alstublieft", hint: "please" } },
+      "where": { pt: { word: "onde", hint: "where" }, sv: { word: "var", hint: "where" }, vi: { word: "o dau", hint: "where" }, th: { word: "ที่ไหน", hint: "thi nai; where" }, ms: { word: "di mana", hint: "where" }, nl: { word: "waar", hint: "where" } },
+      "station": { pt: { word: "a estacao", hint: "station" }, sv: { word: "stationen", hint: "station" }, vi: { word: "nha ga", hint: "station" }, th: { word: "สถานี", hint: "sathani; station" }, ms: { word: "stesen", hint: "station" }, nl: { word: "het station", hint: "station" } },
+      "ticket": { pt: { word: "o bilhete", hint: "ticket" }, sv: { word: "biljetten", hint: "ticket" }, vi: { word: "ve", hint: "ticket" }, th: { word: "ตั๋ว", hint: "tua; ticket" }, ms: { word: "tiket", hint: "ticket" }, nl: { word: "het kaartje", hint: "ticket" } },
+      "hello": { pt: { word: "ola", hint: "hello" }, sv: { word: "hej", hint: "hello" }, vi: { word: "xin chao", hint: "hello" }, th: { word: "สวัสดี", hint: "sawasdee; hello" }, ms: { word: "halo", hint: "hello" }, nl: { word: "hallo", hint: "hello" } },
+      "goodbye": { pt: { word: "tchau", hint: "goodbye" }, sv: { word: "hej da", hint: "goodbye" }, vi: { word: "tam biet", hint: "goodbye" }, th: { word: "ลาก่อน", hint: "la gon; goodbye" }, ms: { word: "selamat tinggal", hint: "goodbye" }, nl: { word: "tot ziens", hint: "goodbye" } },
+      "yes": { pt: { word: "sim", hint: "yes" }, sv: { word: "ja", hint: "yes" }, vi: { word: "vang", hint: "yes" }, th: { word: "ใช่", hint: "chai; yes" }, ms: { word: "ya", hint: "yes" }, nl: { word: "ja", hint: "yes" } },
+      "no": { pt: { word: "nao", hint: "no" }, sv: { word: "nej", hint: "no" }, vi: { word: "khong", hint: "no" }, th: { word: "ไม่", hint: "mai; no/not" }, ms: { word: "tidak", hint: "no" }, nl: { word: "nee", hint: "no" } },
+      "thank you": { pt: { word: "obrigado/a", hint: "thank you" }, sv: { word: "tack", hint: "thank you" }, vi: { word: "cam on", hint: "thank you" }, th: { word: "ขอบคุณ", hint: "khop khun; thank you" }, ms: { word: "terima kasih", hint: "thank you" }, nl: { word: "dank je", hint: "thank you" } },
+      "excuse me": { pt: { word: "com licenca", hint: "excuse me" }, sv: { word: "ursakta", hint: "excuse me" }, vi: { word: "xin loi", hint: "excuse me/sorry" }, th: { word: "ขอโทษ", hint: "kho thot; excuse me/sorry" }, ms: { word: "maaf", hint: "excuse me/sorry" }, nl: { word: "pardon", hint: "excuse me" } },
+      "bathroom": { pt: { word: "o banheiro", hint: "bathroom" }, sv: { word: "toaletten", hint: "bathroom" }, vi: { word: "nha ve sinh", hint: "bathroom" }, th: { word: "ห้องน้ำ", hint: "hong nam; bathroom" }, ms: { word: "tandas", hint: "bathroom" }, nl: { word: "het toilet", hint: "bathroom" } },
+      "house": { pt: { word: "a casa", hint: "house" }, sv: { word: "huset", hint: "house" }, vi: { word: "nha", hint: "house" }, th: { word: "บ้าน", hint: "ban; house" }, ms: { word: "rumah", hint: "house" }, nl: { word: "het huis", hint: "house" } },
+      "school": { pt: { word: "a escola", hint: "school" }, sv: { word: "skolan", hint: "school" }, vi: { word: "truong hoc", hint: "school" }, th: { word: "โรงเรียน", hint: "rong rian; school" }, ms: { word: "sekolah", hint: "school" }, nl: { word: "de school", hint: "school" } },
+      "work": { pt: { word: "o trabalho", hint: "work" }, sv: { word: "arbete", hint: "work" }, vi: { word: "cong viec", hint: "work" }, th: { word: "งาน", hint: "ngan; work" }, ms: { word: "kerja", hint: "work" }, nl: { word: "het werk", hint: "work" } },
+      "friend": { pt: { word: "amigo/a", hint: "friend" }, sv: { word: "van", hint: "friend" }, vi: { word: "ban", hint: "friend" }, th: { word: "เพื่อน", hint: "phuean; friend" }, ms: { word: "kawan", hint: "friend" }, nl: { word: "de vriend", hint: "friend" } },
+      "family": { pt: { word: "a familia", hint: "family" }, sv: { word: "familjen", hint: "family" }, vi: { word: "gia dinh", hint: "family" }, th: { word: "ครอบครัว", hint: "khrop khrua; family" }, ms: { word: "keluarga", hint: "family" }, nl: { word: "de familie", hint: "family" } },
+      "person": { pt: { word: "a pessoa", hint: "person" }, sv: { word: "personen", hint: "person" }, vi: { word: "nguoi", hint: "person" }, th: { word: "คน", hint: "khon; person" }, ms: { word: "orang", hint: "person" }, nl: { word: "de persoon", hint: "person" } },
+      "food": { pt: { word: "a comida", hint: "food" }, sv: { word: "mat", hint: "food" }, vi: { word: "do an", hint: "food" }, th: { word: "อาหาร", hint: "ahan; food" }, ms: { word: "makanan", hint: "food" }, nl: { word: "het eten", hint: "food" } },
+      "money": { pt: { word: "o dinheiro", hint: "money" }, sv: { word: "pengar", hint: "money" }, vi: { word: "tien", hint: "money" }, th: { word: "เงิน", hint: "ngoen; money" }, ms: { word: "wang", hint: "money" }, nl: { word: "het geld", hint: "money" } },
+      "time": { pt: { word: "o tempo", hint: "time" }, sv: { word: "tid", hint: "time" }, vi: { word: "thoi gian", hint: "time" }, th: { word: "เวลา", hint: "wela; time" }, ms: { word: "masa", hint: "time" }, nl: { word: "de tijd", hint: "time" } },
+      "now": { pt: { word: "agora", hint: "now" }, sv: { word: "nu", hint: "now" }, vi: { word: "bay gio", hint: "now" }, th: { word: "ตอนนี้", hint: "ton ni; now" }, ms: { word: "sekarang", hint: "now" }, nl: { word: "nu", hint: "now" } },
+      "bookstore": { pt: { word: "a livraria", hint: "bookstore" }, sv: { word: "bokhandeln", hint: "bookstore" }, vi: { word: "hieu sach", hint: "bookstore" }, th: { word: "ร้านหนังสือ", hint: "ran nang sue; bookstore" }, ms: { word: "kedai buku", hint: "bookstore" }, nl: { word: "de boekwinkel", hint: "bookstore" } },
+      "currently": { pt: { word: "atualmente", hint: "currently" }, sv: { word: "for narvarande", hint: "currently" }, vi: { word: "hien tai", hint: "currently" }, th: { word: "ขณะนี้", hint: "khana ni; currently" }, ms: { word: "kini", hint: "currently" }, nl: { word: "momenteel", hint: "currently" } },
+      "sensitive": { pt: { word: "sensivel", hint: "sensitive" }, sv: { word: "kanslig", hint: "sensitive" }, vi: { word: "nhay cam", hint: "sensitive" }, th: { word: "อ่อนไหว", hint: "on wai; sensitive" }, ms: { word: "sensitif", hint: "sensitive" }, nl: { word: "gevoelig", hint: "sensitive" } },
+      "embarrassed": { pt: { word: "envergonhado/a", hint: "embarrassed" }, sv: { word: "generad", hint: "embarrassed" }, vi: { word: "xau ho", hint: "embarrassed" }, th: { word: "อาย", hint: "ai; embarrassed" }, ms: { word: "malu", hint: "embarrassed" }, nl: { word: "beschaamd", hint: "embarrassed" } },
+      "to eat": { pt: { word: "comer", hint: "to eat" }, sv: { word: "ata", hint: "to eat" }, vi: { word: "an", hint: "to eat" }, th: { word: "กิน", hint: "gin; to eat" }, ms: { word: "makan", hint: "to eat" }, nl: { word: "eten", hint: "to eat" } },
+      "to drink": { pt: { word: "beber", hint: "to drink" }, sv: { word: "dricka", hint: "to drink" }, vi: { word: "uong", hint: "to drink" }, th: { word: "ดื่ม", hint: "duem; to drink" }, ms: { word: "minum", hint: "to drink" }, nl: { word: "drinken", hint: "to drink" } },
+      "today": { pt: { word: "hoje", hint: "today" }, sv: { word: "idag", hint: "today" }, vi: { word: "hom nay", hint: "today" }, th: { word: "วันนี้", hint: "wan ni; today" }, ms: { word: "hari ini", hint: "today" }, nl: { word: "vandaag", hint: "today" } },
+      "tomorrow": { pt: { word: "amanha", hint: "tomorrow" }, sv: { word: "imorgon", hint: "tomorrow" }, vi: { word: "ngay mai", hint: "tomorrow" }, th: { word: "พรุ่งนี้", hint: "phrung ni; tomorrow" }, ms: { word: "esok", hint: "tomorrow" }, nl: { word: "morgen", hint: "tomorrow" } }
+    };
+
+    studyVocabSets.forEach(row => {
+      Object.assign(row, addedLanguageVocab[row.concept] || {});
+    });
+
+    studyVocabSets.forEach(row => {
+      if (row.ar) {
+        row.ar_sa = row.ar;
+        delete row.ar;
+      }
+    });
+
+    const studyPhraseSets = [
+      {
+        intent: "Daily Use",
+        es: { phrase: "Necesito agua.", meaning: "I need water.", note: "Necesito plus a noun is a useful daily pattern." },
+        fr: { phrase: "J'ai besoin d'eau.", meaning: "I need water.", note: "French uses avoir besoin de for need." },
+        ja: { phrase: "Mizu ga hitsuyou desu.", meaning: "I need water.", note: "Hitsuyou desu expresses need politely." }
+      },
+      {
+        intent: "Polite Forms",
+        es: { phrase: "Quisiera un cafe, por favor.", meaning: "I would like a coffee, please.", note: "Quisiera softens the request." },
+        fr: { phrase: "Je voudrais un cafe, s'il vous plait.", meaning: "I would like a coffee, please.", note: "Je voudrais is the reliable polite frame." },
+        ja: { phrase: "Koohii o onegai shimasu.", meaning: "Coffee, please.", note: "Object plus onegai shimasu is polite and flexible." }
+      },
+      {
+        intent: "Travel",
+        es: { phrase: "Donde esta la estacion?", meaning: "Where is the station?", note: "Donde esta asks where something is located." },
+        fr: { phrase: "Ou est la gare?", meaning: "Where is the train station?", note: "Gare is the common word for train station." },
+        ja: { phrase: "Eki wa doko desu ka?", meaning: "Where is the station?", note: "Wa marks station as the topic." }
+      }
+    ];
+
+    const additionalPhraseTranslations = [
+      {
+        ar: { phrase: "أحتاج إلى الماء.", meaning: "I need water.", note: "Uses ahtaj ila for I need." },
+        de: { phrase: "Ich brauche Wasser.", meaning: "I need water.", note: "Brauchen plus a noun is direct and common." },
+        it: { phrase: "Ho bisogno di acqua.", meaning: "I need water.", note: "Avere bisogno di means to need." },
+        zh: { phrase: "我需要水。", meaning: "I need water.", note: "Xuyao expresses need." },
+        ko: { phrase: "물이 필요해요.", meaning: "I need water.", note: "Piryohhaeyo expresses need politely." },
+        hi: { phrase: "मुझे पानी चाहिए।", meaning: "I need water.", note: "Mujhe ... chahiye is a common need pattern." },
+        ru: { phrase: "Мне нужна вода.", meaning: "I need water.", note: "Nuzhna agrees with feminine voda." },
+        he: { phrase: "אני צריך מים.", meaning: "I need water.", note: "Tzarich expresses need for a masculine speaker." },
+        el: { phrase: "Χρειάζομαι νερό.", meaning: "I need water.", note: "Chreiazomai means I need." },
+        pt: { phrase: "Eu preciso de agua.", meaning: "I need water.", note: "Preciso de expresses need." },
+        sv: { phrase: "Jag behover vatten.", meaning: "I need water.", note: "Behover means need." },
+        vi: { phrase: "Toi can nuoc.", meaning: "I need water.", note: "Can expresses need." },
+        th: { phrase: "ฉันต้องการน้ำ", meaning: "I need water.", note: "Tongkan expresses need." },
+        ms: { phrase: "Saya perlukan air.", meaning: "I need water.", note: "Perlukan means need." },
+        nl: { phrase: "Ik heb water nodig.", meaning: "I need water.", note: "Nodig hebben expresses need." }
+      },
+      {
+        ar: { phrase: "قهوة من فضلك.", meaning: "Coffee, please.", note: "A short polite request." },
+        de: { phrase: "Einen Kaffee, bitte.", meaning: "A coffee, please.", note: "Bitte makes the order polite." },
+        it: { phrase: "Un caffe, per favore.", meaning: "A coffee, please.", note: "Per favore marks a polite request." },
+        zh: { phrase: "请给我一杯咖啡。", meaning: "Please give me a coffee.", note: "Qing makes the request polite." },
+        ko: { phrase: "커피 한 잔 주세요.", meaning: "Please give me a coffee.", note: "Juseyo is a flexible polite request." },
+        hi: { phrase: "कृपया एक कॉफी दीजिए।", meaning: "Please give me a coffee.", note: "Dijiye is a polite give form." },
+        ru: { phrase: "Кофе, пожалуйста.", meaning: "Coffee, please.", note: "Pozhaluysta makes the request polite." },
+        he: { phrase: "קפה, בבקשה.", meaning: "Coffee, please.", note: "Bevakasha marks a polite request." },
+        el: { phrase: "Έναν καφέ, παρακαλώ.", meaning: "A coffee, please.", note: "Parakalo marks politeness." },
+        pt: { phrase: "Um cafe, por favor.", meaning: "A coffee, please.", note: "Por favor marks politeness." },
+        sv: { phrase: "En kaffe, tack.", meaning: "A coffee, please.", note: "Tack can soften requests." },
+        vi: { phrase: "Cho toi mot ca phe.", meaning: "Please give me a coffee.", note: "Cho toi is a useful request frame." },
+        th: { phrase: "ขอกาแฟหนึ่งแก้ว", meaning: "A coffee, please.", note: "Kho asks politely for something." },
+        ms: { phrase: "Kopi satu, tolong.", meaning: "One coffee, please.", note: "Tolong makes the request polite." },
+        nl: { phrase: "Een koffie, alstublieft.", meaning: "A coffee, please.", note: "Alstublieft marks politeness." }
+      },
+      {
+        ar: { phrase: "أين المحطة؟", meaning: "Where is the station?", note: "Ayna asks where." },
+        de: { phrase: "Wo ist der Bahnhof?", meaning: "Where is the station?", note: "Bahnhof is train station." },
+        it: { phrase: "Dov'e la stazione?", meaning: "Where is the station?", note: "Dove asks where." },
+        zh: { phrase: "车站在哪里？", meaning: "Where is the station?", note: "Zai nali asks where something is." },
+        ko: { phrase: "역이 어디예요?", meaning: "Where is the station?", note: "Eodi asks where." },
+        hi: { phrase: "स्टेशन कहाँ है?", meaning: "Where is the station?", note: "Kahaan hai asks where it is." },
+        ru: { phrase: "Где станция?", meaning: "Where is the station?", note: "Gde asks where." },
+        he: { phrase: "איפה התחנה?", meaning: "Where is the station?", note: "Eifo asks where." },
+        el: { phrase: "Πού είναι ο σταθμός;", meaning: "Where is the station?", note: "Pou asks where." },
+        pt: { phrase: "Onde fica a estacao?", meaning: "Where is the station?", note: "Onde fica asks where something is." },
+        sv: { phrase: "Var ar stationen?", meaning: "Where is the station?", note: "Var asks where." },
+        vi: { phrase: "Nha ga o dau?", meaning: "Where is the station?", note: "O dau asks where." },
+        th: { phrase: "สถานีอยู่ที่ไหน", meaning: "Where is the station?", note: "Thi nai asks where." },
+        ms: { phrase: "Stesen di mana?", meaning: "Where is the station?", note: "Di mana asks where." },
+        nl: { phrase: "Waar is het station?", meaning: "Where is the station?", note: "Waar asks where." }
+      }
+    ];
+
+    studyPhraseSets.forEach((set, index) => {
+      Object.assign(set, additionalPhraseTranslations[index] || {});
+    });
+
+    studyPhraseSets.forEach(set => {
+      if (set.ar) {
+        set.ar_sa = set.ar;
+        delete set.ar;
+      }
+    });
+
+    const commonPhraseSets = [
+      { title: "Phrase Set 1: Everyday Needs", label: "Need water, food, help, time, and basic items.", phraseIndex: 0 },
+      { title: "Phrase Set 2: Ordering Food", label: "Coffee, bread, milk, prices, and polite cafe requests.", phraseIndex: 1 },
+      { title: "Phrase Set 3: Travel Basics", label: "Stations, tickets, bathrooms, directions, and locations.", phraseIndex: 2 },
+      { title: "Phrase Set 4: Greetings", label: "Hello, goodbye, thanks, names, and simple introductions.", phraseIndex: 0 },
+      { title: "Phrase Set 5: Polite Help", label: "Please, excuse me, apologies, and asking someone to repeat.", phraseIndex: 1 },
+      { title: "Phrase Set 6: Shopping", label: "Bookstores, money, quantities, and asking for what you want.", phraseIndex: 1 },
+      { title: "Phrase Set 7: Time and Plans", label: "Today, tomorrow, now, schedules, and short plans.", phraseIndex: 2 },
+      { title: "Phrase Set 8: People", label: "Friends, family, school, work, and who someone is.", phraseIndex: 0 },
+      { title: "Phrase Set 9: Problems", label: "Sensitive situations, embarrassment, confusion, and help.", phraseIndex: 2 },
+      { title: "Phrase Set 10: Review Phrases", label: "Mixed everyday phrases from the full beginner path.", phraseIndex: 0 }
+    ];
+
+    const learningSets = [
+      { id: "ja-kana", language: "ja", title: "Japanese 1: Kana and Survival Words", eyebrow: "JA Set 1", description: "Hiragana, katakana, greetings, numbers, water, food, and classroom words.", vocabTarget: 80, grammar: "kana reading, desu, ka questions, basic word order", vocab: ["water", "coffee", "bread", "milk", "please"], phraseIndex: 0, mode: "core", quizGoal: 4 },
+      { id: "ja-particles", language: "ja", title: "Japanese 2: Particles and Daily Objects", eyebrow: "JA Set 2", description: "Core nouns, wa, ga, o, no, places, people, and simple descriptions.", vocabTarget: 80, grammar: "wa/ga/o/no particles, kore/sore/are, noun sentences", vocab: ["where", "station", "ticket", "today", "tomorrow"], phraseIndex: 2, mode: "core", quizGoal: 4 },
+      { id: "ja-verbs", language: "ja", title: "Japanese 3: Verbs and Daily Actions", eyebrow: "JA Set 3", description: "Eat, drink, go, come, see, buy, read, write, and daily routine verbs.", vocabTarget: 80, grammar: "dictionary form, masu form, time expressions, ni/e/de", vocab: ["to eat", "to drink", "today", "tomorrow", "water"], phraseIndex: 0, mode: "review", quizGoal: 4 },
+      { id: "ja-adjectives", language: "ja", title: "Japanese 4: Adjectives and Descriptions", eyebrow: "JA Set 4", description: "I-adjectives, na-adjectives, colors, sizes, weather, and feelings.", vocabTarget: 80, grammar: "i/na adjectives, negative forms, very/not very", vocab: ["sensitive", "embarrassed", "coffee", "bread", "milk"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "ja-requests", language: "ja", title: "Japanese 5: Requests and Shopping", eyebrow: "JA Set 5", description: "Ordering, asking prices, counters, quantities, and polite requests.", vocabTarget: 80, grammar: "kudasai, onegai shimasu, counters, kudasai vs arimasu", vocab: ["please", "coffee", "ticket", "bookstore", "water"], phraseIndex: 1, mode: "core", quizGoal: 4 },
+      { id: "ja-past-tense", language: "ja", title: "Japanese 6: Past, Negative, and Plans", eyebrow: "JA Set 6", description: "Past tense, negative forms, weekend plans, travel, and common time words.", vocabTarget: 80, grammar: "mashita/masen/deshita, kara/made, future plans", vocab: ["today", "tomorrow", "station", "ticket", "to eat"], phraseIndex: 2, mode: "review", quizGoal: 4 },
+      { id: "ja-te-form", language: "ja", title: "Japanese 7: Te-form Foundations", eyebrow: "JA Set 7", description: "Connecting actions, asking permission, making requests, and useful verbs.", vocabTarget: 80, grammar: "te-form, te kudasai, te mo ii desu ka, te imasu", vocab: ["to eat", "to drink", "please", "where", "station"], phraseIndex: 1, mode: "review", quizGoal: 4 },
+      { id: "ja-family-work", language: "ja", title: "Japanese 8: Family, Work, and School", eyebrow: "JA Set 8", description: "People, occupations, family terms, school words, schedules, and locations.", vocabTarget: 80, grammar: "arimasu/imasu, frequency words, counters for people", vocab: ["bookstore", "currently", "where", "today", "tomorrow"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "ja-review-n5", language: "ja", title: "Japanese 9: N5 Review Loop", eyebrow: "JA Set 9", description: "Mixed N5 review across 800 target words and essential grammar patterns.", vocabTarget: 80, grammar: "mixed N5 review, weak areas, reading practice", vocab: ["water", "coffee", "to eat", "to drink", "station", "ticket"], phraseIndex: 2, mode: "review", quizGoal: 5 },
+      { id: "ja-final-check", language: "ja", title: "Japanese 10: Final Check", eyebrow: "JA Set 10", description: "A final checkpoint for all 800 target vocabulary words and core grammar.", vocabTarget: 80, grammar: "full-course checkpoint, sentence reading, phrase production", vocab: ["please", "where", "today", "tomorrow", "bookstore", "embarrassed"], phraseIndex: 1, mode: "review", quizGoal: 5 },
+
+      { id: "es-core-1", language: "es", title: "Spanish 1: Essentials", eyebrow: "ES Set 1", description: "Greetings, food, numbers, basic nouns, and polite requests.", vocabTarget: 100, grammar: "articles, gender, ser/estar introduction", vocab: ["water", "coffee", "bread", "milk", "please"], phraseIndex: 1, mode: "core", quizGoal: 4 },
+      { id: "es-core-2", language: "es", title: "Spanish 2: Places and Travel", eyebrow: "ES Set 2", description: "Places, directions, transport, time words, and tickets.", vocabTarget: 120, grammar: "estar for location, hay, ir, question words", vocab: ["where", "station", "ticket", "today", "tomorrow"], phraseIndex: 2, mode: "core", quizGoal: 4 },
+      { id: "es-verbs", language: "es", title: "Spanish 3: Verb Families", eyebrow: "ES Set 3", description: "Regular verbs, common irregulars, daily routines, and sentence building.", vocabTarget: 140, grammar: "present tense -ar/-er/-ir, tener, querer, poder", vocab: ["to eat", "to drink", "today", "tomorrow", "coffee"], phraseIndex: 0, mode: "review", quizGoal: 4 },
+      { id: "es-adjectives", language: "es", title: "Spanish 4: Descriptions", eyebrow: "ES Set 4", description: "Adjectives, colors, feelings, family, and everyday descriptions.", vocabTarget: 80, grammar: "adjective agreement, muy, comparatives", vocab: ["sensitive", "embarrassed", "coffee", "bread", "milk"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "es-shopping", language: "es", title: "Spanish 5: Shopping and Requests", eyebrow: "ES Set 5", description: "Buying things, ordering, prices, quantities, and polite requests.", vocabTarget: 80, grammar: "querer, cuanto cuesta, direct objects", vocab: ["please", "coffee", "ticket", "bookstore", "water"], phraseIndex: 1, mode: "core", quizGoal: 4 },
+      { id: "es-past", language: "es", title: "Spanish 6: Past and Plans", eyebrow: "ES Set 6", description: "Yesterday, tomorrow, plans, travel, and common past-tense verbs.", vocabTarget: 80, grammar: "preterite intro, ir a, time expressions", vocab: ["today", "tomorrow", "station", "ticket", "to eat"], phraseIndex: 2, mode: "review", quizGoal: 4 },
+      { id: "es-pronouns", language: "es", title: "Spanish 7: Pronouns and People", eyebrow: "ES Set 7", description: "People, family, object pronouns, likes, and common social phrases.", vocabTarget: 80, grammar: "me/te/le, gustar, possessives", vocab: ["to eat", "to drink", "please", "where", "station"], phraseIndex: 0, mode: "review", quizGoal: 4 },
+      { id: "es-work-school", language: "es", title: "Spanish 8: Work and School", eyebrow: "ES Set 8", description: "School, jobs, schedules, places, obligations, and weekly routines.", vocabTarget: 80, grammar: "tener que, hay que, frequency words", vocab: ["bookstore", "currently", "where", "today", "tomorrow"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "es-review-loop", language: "es", title: "Spanish 9: A2 Review Loop", eyebrow: "ES Set 9", description: "Mixed review across core words, travel, verbs, and false friends.", vocabTarget: 80, grammar: "mixed A1-A2 review and weak areas", vocab: ["water", "coffee", "to eat", "to drink", "station", "ticket"], phraseIndex: 2, mode: "review", quizGoal: 5 },
+      { id: "es-final-check", language: "es", title: "Spanish 10: Final Check", eyebrow: "ES Set 10", description: "Final checkpoint for the beginner Spanish vocabulary and grammar path.", vocabTarget: 50, grammar: "full-course checkpoint and phrase production", vocab: ["please", "where", "today", "tomorrow", "bookstore", "embarrassed"], phraseIndex: 1, mode: "review", quizGoal: 5 },
+
+      { id: "fr-core-1", language: "fr", title: "French 1: Essentials", eyebrow: "FR Set 1", description: "Greetings, cafe words, numbers, basic nouns, and polite requests.", vocabTarget: 100, grammar: "articles, gender, etre/avoir introduction", vocab: ["water", "coffee", "bread", "milk", "please"], phraseIndex: 1, mode: "core", quizGoal: 4 },
+      { id: "fr-core-2", language: "fr", title: "French 2: Places and Travel", eyebrow: "FR Set 2", description: "Travel words, stations, time, location, and useful questions.", vocabTarget: 120, grammar: "ou, il y a, aller, prepositions", vocab: ["where", "station", "ticket", "today", "tomorrow"], phraseIndex: 2, mode: "core", quizGoal: 4 },
+      { id: "fr-verbs", language: "fr", title: "French 3: Verbs and Routines", eyebrow: "FR Set 3", description: "Daily actions, regular verbs, common irregulars, and negation.", vocabTarget: 140, grammar: "-er verbs, faire, aller, negation with ne...pas", vocab: ["to eat", "to drink", "today", "tomorrow", "coffee"], phraseIndex: 0, mode: "review", quizGoal: 4 },
+      { id: "fr-adjectives", language: "fr", title: "French 4: Descriptions", eyebrow: "FR Set 4", description: "Adjectives, colors, feelings, family, and everyday descriptions.", vocabTarget: 80, grammar: "adjective agreement, placement, tres", vocab: ["sensitive", "embarrassed", "coffee", "bread", "milk"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "fr-shopping", language: "fr", title: "French 5: Shopping and Requests", eyebrow: "FR Set 5", description: "Buying things, ordering, prices, quantities, and polite requests.", vocabTarget: 80, grammar: "je voudrais, combien, partitives", vocab: ["please", "coffee", "ticket", "bookstore", "water"], phraseIndex: 1, mode: "core", quizGoal: 4 },
+      { id: "fr-past", language: "fr", title: "French 6: Past and Plans", eyebrow: "FR Set 6", description: "Yesterday, tomorrow, plans, travel, and common past-tense verbs.", vocabTarget: 80, grammar: "passe compose intro, aller + infinitive", vocab: ["today", "tomorrow", "station", "ticket", "to eat"], phraseIndex: 2, mode: "review", quizGoal: 4 },
+      { id: "fr-pronouns", language: "fr", title: "French 7: Pronouns and People", eyebrow: "FR Set 7", description: "People, family, pronouns, likes, and common social phrases.", vocabTarget: 80, grammar: "me/te/lui, aimer, possessives", vocab: ["to eat", "to drink", "please", "where", "station"], phraseIndex: 0, mode: "review", quizGoal: 4 },
+      { id: "fr-work-school", language: "fr", title: "French 8: Work and School", eyebrow: "FR Set 8", description: "School, jobs, schedules, places, obligations, and weekly routines.", vocabTarget: 80, grammar: "devoir, il faut, frequency words", vocab: ["bookstore", "currently", "where", "today", "tomorrow"], phraseIndex: 0, mode: "false", quizGoal: 4 },
+      { id: "fr-review-loop", language: "fr", title: "French 9: A2 Review Loop", eyebrow: "FR Set 9", description: "Mixed review across core words, travel, verbs, and false friends.", vocabTarget: 80, grammar: "mixed A1-A2 review and weak areas", vocab: ["water", "coffee", "to eat", "to drink", "station", "ticket"], phraseIndex: 2, mode: "review", quizGoal: 5 },
+      { id: "fr-final-check", language: "fr", title: "French 10: Final Check", eyebrow: "FR Set 10", description: "Final checkpoint for the beginner French vocabulary and grammar path.", vocabTarget: 50, grammar: "full-course checkpoint and phrase production", vocab: ["please", "where", "today", "tomorrow", "bookstore", "embarrassed"], phraseIndex: 1, mode: "review", quizGoal: 5 }
+    ];
+
+    const sectionSize = { ja: 25, es: 25, pt: 25, fr: 25, ar_sa: 25, de: 25, it: 25, nl: 25, sv: 25, ms: 25, vi: 25, th: 25, zh: 25, ko: 25, hi: 25, ru: 25, he: 25, el: 25 };
+    const courseTargets = { ja: 800, es: 850, pt: 850, fr: 850, ar_sa: 800, de: 850, it: 850, nl: 850, sv: 850, ms: 800, vi: 800, th: 800, zh: 800, ko: 800, hi: 800, ru: 850, he: 800, el: 800 };
+    const languageNames = { ja: "Japanese", es: "Spanish", pt: "Portuguese", fr: "French", ar_sa: "Arabic (Saudi Arabia)", de: "German", it: "Italian", nl: "Dutch", sv: "Swedish", ms: "Malay", vi: "Vietnamese", th: "Thai", zh: "Chinese", ko: "Korean", hi: "Hindi", ru: "Russian", he: "Hebrew", el: "Greek" };
+    const languageCodes = { ja: "JA", es: "ES", pt: "PT", fr: "FR", ar_sa: "AR", de: "DE", it: "IT", nl: "NL", sv: "SV", ms: "MS", vi: "VI", th: "TH", zh: "ZH", ko: "KO", hi: "HI", ru: "RU", he: "HE", el: "EL" };
+    const sectionThemes = [
+      "Numbers and Time", "Home and Family", "Food and Cooking", "Daily Routine",
+      "Transportation", "Shopping", "Weather and Seasons", "Health and Body",
+      "School and Work", "Hobbies and Free Time", "Travel Problems", "Directions",
+      "Feelings and Opinions", "Technology", "Nature and Places", "Restaurants",
+      "Appointments", "Stories and Past Events", "Plans and Invitations", "Review Sprint",
+      "Listening Check", "Reading Check", "Conversation Builder", "Final Mixed Review"
+    ];
+    const sharedSectionTitles = [
+      "Essentials",
+      "Places and Travel",
+      "Daily Actions",
+      "Descriptions",
+      "Shopping and Requests",
+      "Past and Plans",
+      "People and Pronouns",
+      "Work and School",
+      "Review Loop",
+      "Final Check"
+    ];
+    const grammarThemes = {
+      ja: ["particles", "verb forms", "adjectives", "counters", "te-form", "past tense", "polite requests", "comparisons"],
+      es: ["present tense", "gender agreement", "object pronouns", "preterite", "ser vs estar", "gustar", "comparisons", "questions"],
+      pt: ["present tense", "gender agreement", "object pronouns", "past basics", "polite requests", "questions", "comparisons", "prepositions"],
+      fr: ["present tense", "gender agreement", "negation", "passe compose", "partitives", "pronouns", "adjective placement", "questions"],
+      ar_sa: ["root patterns", "gender", "questions", "formal requests", "pronouns", "plural patterns", "negation", "word order"],
+      de: ["articles", "verb position", "questions", "cases", "present tense", "modal verbs", "plurals", "adjective basics"],
+      it: ["articles", "present tense", "gender agreement", "questions", "polite requests", "prepositions", "past basics", "pronouns"],
+      nl: ["articles", "verb position", "questions", "present tense", "word order", "plurals", "negation", "pronouns"],
+      sv: ["articles", "word order", "questions", "present tense", "definite endings", "negation", "pronouns", "time words"],
+      ms: ["word order", "questions", "polite requests", "pronouns", "negation", "time words", "affixes", "possessives"],
+      vi: ["tones", "word order", "questions", "classifiers", "negation", "pronouns", "time words", "polite requests"],
+      th: ["script", "tones", "questions", "polite particles", "word order", "negation", "time words", "pronouns"],
+      zh: ["pinyin", "word order", "measure words", "questions", "time words", "negation", "particles", "comparison basics"],
+      ko: ["hangul", "polite endings", "particles", "questions", "present tense", "numbers", "negation", "honorific basics"],
+      hi: ["devanagari", "gender", "postpositions", "questions", "present tense", "need patterns", "negation", "pronouns"],
+      ru: ["cyrillic", "gender", "cases", "present tense", "questions", "motion basics", "negation", "adjective agreement"],
+      he: ["script", "gender", "questions", "polite requests", "present tense", "negation", "possessives", "time words"],
+      el: ["alphabet", "articles", "questions", "present tense", "gender", "polite requests", "negation", "pronouns"]
+    };
+    const conceptPools = [
+      ["water", "coffee", "bread", "milk", "please"],
+      ["where", "station", "ticket", "today", "tomorrow"],
+      ["to eat", "to drink", "today", "tomorrow", "water"],
+      ["bookstore", "currently", "sensitive", "embarrassed", "please"],
+      ["coffee", "ticket", "bookstore", "station", "where"]
+    ];
+
+    Object.entries(courseTargets).forEach(([language, target]) => {
+      const totalSections = Math.ceil(target / sectionSize[language]);
+      const existingCount = learningSets.filter(set => set.language === language).length;
+      for (let section = existingCount + 1; section <= totalSections; section += 1) {
+        const theme = sectionThemes[(section - existingCount - 1) % sectionThemes.length];
+        learningSets.push({
+          id: `${language}-section-${section}`,
+          language,
+          title: `${languageNames[language]} ${section}: ${theme}`,
+          eyebrow: `${languageCodes[language]} Set ${section}`,
+          description: `${theme} vocabulary and practical sentence patterns for the ${languageNames[language]} course.`,
+          vocabTarget: sectionSize[language],
+          grammar: grammarThemes[language][(section - 1) % grammarThemes[language].length],
+          vocab: conceptPools[(section - 1) % conceptPools.length],
+          phraseIndex: (section - 1) % studyPhraseSets.length,
+          mode: section % 5 === 0 ? "false" : section % 3 === 0 ? "review" : "core",
+          quizGoal: section % 8 === 0 ? 5 : 4
+        });
+      }
+    });
+
+    learningSets.forEach((set, index) => {
+      set.originalVocabTarget = set.vocabTarget;
+      set.vocabTarget = sectionSize[set.language];
+      set.section = learningSets.filter(item => item.language === set.language).findIndex(item => item.id === set.id) + 1;
+      set.title = set.title.replace(/^(Japanese|Spanish|Portuguese|French|Arabic \(Saudi Arabia\)|German|Italian|Dutch|Swedish|Malay|Vietnamese|Thai|Chinese|Korean|Hindi|Russian|Hebrew|Greek) \d+:/, `$1 ${set.section}:`);
+      set.description = `${set.description} This is a smaller ${set.vocabTarget}-word set from the full course track.`;
+    });
+
+    const savedState = JSON.parse(localStorage.getItem("multilangState") || "{}");
+    let selected = new Set(savedState.selected && savedState.selected.length ? savedState.selected : ["es", "fr", "ja"]);
+    const oldArabicSelections = ["ar_msa", "ar_eg", "ar_jo"];
+    if (oldArabicSelections.some(id => selected.has(id))) {
+      oldArabicSelections.forEach(id => selected.delete(id));
+      selected.add("ar_sa");
+    }
+    const validLanguageIds = new Set(languages.map(language => language.id));
+    selected = new Set([...selected].filter(id => validLanguageIds.has(id)));
+    if (!selected.size) {
+      selected = new Set(["es", "fr", "ja"]);
+    }
+    let vocabOffset = Number.isInteger(savedState.vocabOffset) ? savedState.vocabOffset : 0;
+    let quizIndex = Number.isInteger(savedState.quizIndex) ? savedState.quizIndex : 0;
+    let score = Number.isInteger(savedState.score) ? savedState.score : 0;
+    let quizScores = savedState.quizScores || {};
+    let quizQuestionScores = savedState.quizQuestionScores || {};
+    let missedQuizQuestions = savedState.missedQuizQuestions || {};
+    let quizLanguageId = savedState.quizLanguageId || "mixed";
+    if (oldArabicSelections.includes(quizLanguageId)) {
+      quizLanguageId = "ar_sa";
+    }
+    if (quizLanguageId !== "mixed" && !validLanguageIds.has(quizLanguageId)) {
+      quizLanguageId = "mixed";
+    }
+    let vocabMode = "core";
+    let phraseIndex = Number.isInteger(savedState.phraseIndex) ? savedState.phraseIndex : 0;
+    let activeSetId = savedState.activeSetId || learningSets[0].id;
+    let setProgress = savedState.setProgress || {};
+    let sectionSelected = false;
+    let answeredQuestion = false;
+    let activeStudyView = "list";
+    let flashcardIndex = Number.isInteger(savedState.flashcardIndex) ? savedState.flashcardIndex : 0;
+    let flippedFlashcards = new Set();
+
+    if (savedState.languageProgress) {
+      languages.forEach(language => {
+        const savedLanguage = savedState.languageProgress[language.id];
+        if (savedLanguage) {
+          language.progress = savedLanguage.progress;
+          language.due = savedLanguage.due;
+        }
+      });
+    }
+
+    const landingPage = document.querySelector("#landingPage");
+    const appShell = document.querySelector("#appShell");
+    const landingLogin = document.querySelector("#landingLogin");
+    const heroLogin = document.querySelector("#heroLogin");
+    const landingDemo = document.querySelector("#landingDemo");
+    const heroDemo = document.querySelector("#heroDemo");
+    const todayNav = document.querySelector("#todayNav");
+    const dashboardPage = document.querySelector("#dashboardPage");
+    const studyPage = document.querySelector("#studyPage");
+    const studyPagePill = document.querySelector("#studyPagePill");
+    const studyPageTitle = document.querySelector("#studyPageTitle");
+    const studyPageSubtitle = document.querySelector("#studyPageSubtitle");
+    const backToSections = document.querySelector("#backToSections");
+    const flashcardPanel = document.querySelector("#flashcardPanel");
+    const flashcardCount = document.querySelector("#flashcardCount");
+    const flashcardCards = document.querySelector("#flashcardCards");
+    const flashcardHint = document.querySelector("#flashcardHint");
+    const previousCard = document.querySelector("#previousCard");
+    const nextCard = document.querySelector("#nextCard");
+    const quizPanel = document.querySelector("#quizPanel");
+    const languageChoices = document.querySelector("#languageChoices");
+    const progressRows = document.querySelector("#progressRows");
+    const studyArea = document.querySelector("#studyArea");
+    const setGrid = document.querySelector("#setGrid");
+    const setStatus = document.querySelector("#setStatus");
+    const setSummary = document.querySelector("#setSummary");
+    const nextSet = document.querySelector("#nextSet");
+    const vocabTable = document.querySelector("#vocabTable");
+    const selectedCount = document.querySelector("#selectedCount");
+    const topSummary = document.querySelector("#topSummary");
+    const sidePlan = document.querySelector("#sidePlan");
+    const sidePlanText = document.querySelector("#sidePlanText");
+    const dueCount = document.querySelector("#dueCount");
+    const phraseGrid = document.querySelector("#phraseGrid");
+    const phraseCount = document.querySelector("#phraseCount");
+    const grammarList = document.querySelector("#grammarList");
+    const grammarCount = document.querySelector("#grammarCount");
+    const quizModeBar = document.querySelector("#quizModeBar");
+    const quizPrompt = document.querySelector("#quizPrompt");
+    const quizMode = document.querySelector("#quizMode");
+    const quizProgressFill = document.querySelector("#quizProgressFill");
+    const quizAnswers = document.querySelector("#quizAnswers");
+    const quizScore = document.querySelector("#quizScore");
+    const quizCornerScore = document.querySelector("#quizCornerScore");
+    const authModal = document.querySelector("#authModal");
+    const openAuth = document.querySelector("#openAuth");
+    const closeAuth = document.querySelector("#closeAuth");
+    const authForm = document.querySelector("#authForm");
+    const guestMode = document.querySelector("#guestMode");
+    const profileChip = document.querySelector("#profileChip");
+    const signOutButton = document.querySelector("#signOutButton");
+    const openSearch = document.querySelector("#openSearch");
+    const searchPanel = document.querySelector("#searchPanel");
+    const searchInput = document.querySelector("#searchInput");
+    const searchResults = document.querySelector("#searchResults");
+    const addLanguage = document.querySelector("#addLanguage");
+    const tunePlan = document.querySelector("#tunePlan");
+    const startReview = document.querySelector("#startReview");
+    const toast = document.querySelector("#toast");
+    const googleSignInButton = document.querySelector("#googleSignInButton");
+    const googleSetupMessage = document.querySelector("#googleSetupMessage");
+    const microsoftSignInButton = document.querySelector("#microsoftSignInButton");
+
+    function setSignedInView(label) {
+      if (label) {
+        profileChip.textContent = label;
+        profileChip.classList.add("visible");
+        signOutButton.classList.add("visible");
+        openAuth.style.display = "none";
+        landingPage.classList.add("hidden");
+        appShell.classList.remove("locked");
+      } else {
+        sectionSelected = false;
+        profileChip.classList.remove("visible");
+        signOutButton.classList.remove("visible");
+        openAuth.style.display = "inline-flex";
+        appShell.classList.add("locked");
+        landingPage.classList.remove("hidden");
+      }
+    }
+
+    if (savedState.profileLabel) {
+      setSignedInView(savedState.profileLabel);
+    }
+
+    const pageParams = new URLSearchParams(window.location.search);
+    if (pageParams.has("logout")) {
+      localStorage.removeItem("multilangState");
+      localStorage.removeItem("multilangGoogleProfile");
+      localStorage.removeItem("multilangMicrosoftProfile");
+      setSignedInView("");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    function saveState() {
+      localStorage.setItem("multilangState", JSON.stringify({
+        selected: [...selected],
+        vocabOffset,
+        quizIndex,
+        score,
+        quizScores,
+        quizQuestionScores,
+        missedQuizQuestions,
+        quizLanguageId,
+        vocabMode,
+        phraseIndex,
+        activeSetId,
+        setProgress,
+        sectionSelected,
+        flashcardIndex,
+        languageProgress: Object.fromEntries(languages.map(language => [
+          language.id,
+          { progress: language.progress, due: language.due }
+        ])),
+        profileLabel: profileChip.classList.contains("visible") ? profileChip.textContent.trim() : ""
+      }));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("visible");
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => toast.classList.remove("visible"), 2200);
+    }
+
+    function focusPanel(panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      panel.classList.remove("highlight-pulse");
+      void panel.offsetWidth;
+      panel.classList.add("highlight-pulse");
+    }
+
+    function selectedLanguages() {
+      return languages.filter(language => selected.has(language.id));
+    }
+
+    function activeSet() {
+      return learningSets.find(set => set.id === activeSetId) || learningSets[0];
+    }
+
+    function activeSectionNumber() {
+      return activeSet().section || 1;
+    }
+
+    function visibleLearningSets() {
+      const activeIds = new Set(selectedLanguages().map(language => language.id));
+      const maxSections = Math.max(...learningSets.filter(set => activeIds.has(set.language)).map(set => set.section || 1));
+      return Array.from({ length: maxSections }, (_, index) => {
+        const section = index + 1;
+        const languageSets = learningSets.filter(set => activeIds.has(set.language) && set.section === section);
+        const baseSet = languageSets[0] || learningSets[0];
+        const sharedTitle = sharedSectionTitles[section - 1] || sectionThemes[(section - sharedSectionTitles.length - 1) % sectionThemes.length];
+        return {
+          id: `shared-section-${section}`,
+          section,
+          eyebrow: `Set ${section}`,
+          title: `Set ${section}: ${sharedTitle}`,
+          description: baseSet.description,
+          vocabTarget: baseSet.vocabTarget,
+          grammar: languageSets.map(set => `${setLanguage(set).name}: ${set.grammar}`).join(" | "),
+          vocab: baseSet.vocab,
+          quizGoal: 20,
+          languageSets
+        };
+      });
+    }
+
+    function setLanguage(set = activeSet()) {
+      return languages.find(language => language.id === set.language) || languages[0];
+    }
+
+    function activeLearningLanguages() {
+      return selectedLanguages();
+    }
+
+    function isSetUnlocked(set) {
+      const section = set.section || 1;
+      if (section === 1) {
+        return true;
+      }
+      const previousSet = visibleLearningSets().find(item => item.section === section - 1);
+      const previousProgress = setProgress[`shared-section-${section - 1}`] || {};
+      return (previousProgress.correct || 0) >= (previousSet?.quizGoal || 20);
+    }
+
+    function activeSetRows() {
+      const set = visibleLearningSets().find(item => item.section === activeSectionNumber()) || visibleLearningSets()[0];
+      return studyVocabSets.filter(row => set.vocab.includes(row.concept));
+    }
+
+    function activeVocabRows() {
+      const coreRows = studyVocabSets.filter(row => row.mode === "core");
+      const targetCount = activeSet().vocabTarget || 25;
+      const start = ((activeSectionNumber() - 1) * targetCount) % coreRows.length;
+      return Array.from({ length: targetCount }, (_, index) => coreRows[(start + index) % coreRows.length]);
+    }
+
+    function hasKanji(text) {
+      return /[\u3400-\u9fff]/.test(text);
+    }
+
+    const japaneseRuby = {
+      "水": "<ruby class=\"furigana\">水<rt>みず</rt></ruby>",
+      "牛乳": "<ruby class=\"furigana\">牛乳<rt>ぎゅうにゅう</rt></ruby>",
+      "お願いします": "お<ruby class=\"furigana\">願<rt>ねが</rt></ruby>いします",
+      "駅": "<ruby class=\"furigana\">駅<rt>えき</rt></ruby>",
+      "切符": "<ruby class=\"furigana\">切符<rt>きっぷ</rt></ruby>",
+      "家": "<ruby class=\"furigana\">家<rt>いえ</rt></ruby>",
+      "学校": "<ruby class=\"furigana\">学校<rt>がっこう</rt></ruby>",
+      "仕事": "<ruby class=\"furigana\">仕事<rt>しごと</rt></ruby>",
+      "友達": "<ruby class=\"furigana\">友達<rt>ともだち</rt></ruby>",
+      "家族": "<ruby class=\"furigana\">家族<rt>かぞく</rt></ruby>",
+      "人": "<ruby class=\"furigana\">人<rt>ひと</rt></ruby>",
+      "食べ物": "<ruby class=\"furigana\">食<rt>た</rt></ruby>べ<ruby class=\"furigana\">物<rt>もの</rt></ruby>",
+      "お金": "お<ruby class=\"furigana\">金<rt>かね</rt></ruby>",
+      "時間": "<ruby class=\"furigana\">時間<rt>じかん</rt></ruby>",
+      "今": "<ruby class=\"furigana\">今<rt>いま</rt></ruby>",
+      "本屋": "<ruby class=\"furigana\">本屋<rt>ほんや</rt></ruby>",
+      "敏感": "<ruby class=\"furigana\">敏感<rt>びんかん</rt></ruby>",
+      "恥ずかしい": "<ruby class=\"furigana\">恥<rt>は</rt></ruby>ずかしい",
+      "食べる": "<ruby class=\"furigana\">食<rt>た</rt></ruby>べる",
+      "飲む": "<ruby class=\"furigana\">飲<rt>の</rt></ruby>む",
+      "今日": "<ruby class=\"furigana\">今日<rt>きょう</rt></ruby>",
+      "明日": "<ruby class=\"furigana\">明日<rt>あした</rt></ruby>"
+    };
+
+    function formatWord(languageId, entry) {
+      if (languageId === "ja" && hasKanji(entry.word)) {
+        return japaneseRuby[entry.word] || entry.word;
+      }
+      return entry.word;
+    }
+
+    function escapeAttribute(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    const speechLanguageCodes = {
+      es: "es-ES",
+      pt: "pt-BR",
+      fr: "fr-FR",
+      ja: "ja-JP",
+      ar_sa: "ar-SA",
+      de: "de-DE",
+      it: "it-IT",
+      nl: "nl-NL",
+      sv: "sv-SE",
+      ms: "ms-MY",
+      vi: "vi-VN",
+      th: "th-TH",
+      zh: "zh-CN",
+      ko: "ko-KR",
+      hi: "hi-IN",
+      ru: "ru-RU",
+      he: "he-IL",
+      el: "el-GR"
+    };
+
+    function isArabicLanguage(languageId) {
+      return languageId === "ar_sa";
+    }
+
+    function arabicFallbackCode(languageId) {
+      return languageId === "ar_sa" ? "ar-SA" : "ar";
+    }
+
+    let speechVoicesLoaded = null;
+
+    function loadSpeechVoices() {
+      if (!("speechSynthesis" in window)) {
+        return Promise.resolve([]);
+      }
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length) {
+        return Promise.resolve(voices);
+      }
+      if (!speechVoicesLoaded) {
+        speechVoicesLoaded = new Promise(resolve => {
+          const finish = () => resolve(window.speechSynthesis.getVoices());
+          window.speechSynthesis.addEventListener("voiceschanged", finish, { once: true });
+          setTimeout(finish, 900);
+        });
+      }
+      return speechVoicesLoaded;
+    }
+
+    function preferredSpeechVoice(languageId) {
+      if (!window.speechSynthesis?.getVoices) {
+        return null;
+      }
+      const target = speechLanguageCodes[languageId] || "en-US";
+      const base = target.split("-")[0];
+      const voices = window.speechSynthesis.getVoices();
+      return voices.find(voice => voice.lang === target)
+        || voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith(`${base}-`))
+        || voices.find(voice => voice.name.toLowerCase().includes(isArabicLanguage(languageId) ? "arabic" : target.toLowerCase()))
+        || null;
+    }
+
+    function playArabicFallbackAudio(languageId, word) {
+      return new Promise(resolve => {
+        const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${arabicFallbackCode(languageId)}&q=${encodeURIComponent(word)}`);
+        const fail = () => {
+          showToast("Arabic audio needs an Arabic voice installed in Chrome or Windows.");
+          resolve(false);
+        };
+        audio.addEventListener("ended", () => resolve(true), { once: true });
+        audio.addEventListener("error", fail, { once: true });
+        audio.play().catch(fail);
+      });
+    }
+
+    function audioButton(languageId, word, label = "Play audio", tagName = "button") {
+      return `
+        <${tagName} class="audio-button" ${tagName === "button" ? "type=\"button\"" : "role=\"button\" tabindex=\"0\""} data-audio-language="${languageId}" data-audio-word="${escapeAttribute(word)}" aria-label="${label}">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+        </${tagName}>
+      `;
+    }
+
+    async function playVocabularyAudio(languageId, word) {
+      if (!("speechSynthesis" in window)) {
+        if (isArabicLanguage(languageId)) {
+          await playArabicFallbackAudio(languageId, word);
+          return;
+        }
+        showToast("Audio is not available in this browser.");
+        return;
+      }
+      await loadSpeechVoices();
+      const voice = preferredSpeechVoice(languageId);
+      if (isArabicLanguage(languageId) && !voice) {
+        await playArabicFallbackAudio(languageId, word);
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = speechLanguageCodes[languageId] || "en-US";
+      utterance.voice = voice;
+      utterance.rate = languageId === "ja" || isArabicLanguage(languageId) ? 0.82 : 0.9;
+      utterance.onerror = () => {
+        if (isArabicLanguage(languageId)) {
+          playArabicFallbackAudio(languageId, word);
+        }
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+    }
+
+    function sectionDescription(set) {
+      return `${set.vocabTarget} vocabulary words across English plus ${selectedLanguages().map(language => language.name).join(", ")}. Review the vocabulary list, then pass the vocabulary quiz.`;
+    }
+
+    function setActiveTab(selector, value, attribute) {
+      document.querySelectorAll(selector).forEach(button => {
+        button.classList.toggle("active", button.getAttribute(attribute) === value);
+      });
+    }
+
+    function renderSets() {
+      const visibleSets = visibleLearningSets();
+      const activeSection = activeSectionNumber();
+      const active = visibleSets.find(set => set.section === activeSection) || visibleSets[0];
+      const activeIndex = visibleSets.findIndex(set => set.section === active.section);
+      const activeProgress = setProgress[active.id] || { correct: 0, completed: false };
+      activeProgress.completed = (activeProgress.correct || 0) >= active.quizGoal;
+      setStatus.textContent = `Set ${active.section} of ${visibleSets.length}`;
+      nextSet.disabled = !activeProgress.completed || activeIndex >= visibleSets.length - 1;
+      setSummary.textContent = activeProgress.completed
+        ? "This set is complete. Choose the next unlocked set to keep going."
+        : sectionDescription(active);
+      setGrid.innerHTML = `
+          <section class="set-row" aria-label="Vocabulary Sets">
+            <div class="set-row-head">
+              <div class="set-row-title">
+                <div class="brand-mark">M</div>
+                <div>
+                  <strong>Vocabulary Sets</strong>
+                  <div class="note">${visibleSets.length} small sets for ${selectedLanguages().map(language => language.name).join(", ")}</div>
+                </div>
+              </div>
+              <div class="set-scroll-actions">
+                <button class="icon-button" type="button" data-scroll-row="shared" data-scroll-dir="-1" aria-label="Scroll vocabulary sets left">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button class="icon-button" type="button" data-scroll-row="shared" data-scroll-dir="1" aria-label="Scroll vocabulary sets right">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="set-track" data-set-track="shared">
+              ${visibleSets.map(set => {
+                const progress = setProgress[set.id] || { correct: 0, completed: false };
+                progress.completed = (progress.correct || 0) >= set.quizGoal;
+                const unlocked = isSetUnlocked(set);
+                const status = progress.completed ? "Complete" : unlocked ? `${progress.correct || 0}/${set.quizGoal} correct` : "Locked";
+                return `
+                  <button class="set-card ${set.id === active.id ? "active" : ""} ${unlocked ? "" : "locked"}" type="button" data-set-id="${set.id}" ${unlocked ? "" : "disabled"}>
+                    <span class="pill">${set.eyebrow}</span>
+                    <h3>${set.title}</h3>
+                    <p><strong>${set.vocabTarget} vocabulary words</strong></p>
+                    <div class="set-card-footer">
+                      <strong>${status}</strong>
+                    </div>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </section>
+          <section class="set-row" aria-label="Common phrase sections">
+            <div class="set-row-head">
+              <div class="set-row-title">
+                <div class="brand-mark">P</div>
+                <div>
+                  <strong>Common Phrase Sets</strong>
+                  <div class="note">Useful phrases across ${selectedLanguages().map(language => language.name).join(", ")}</div>
+                </div>
+              </div>
+              <div class="set-scroll-actions">
+                <button class="icon-button" type="button" data-scroll-row="phrases" data-scroll-dir="-1" aria-label="Scroll phrase sets left">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button class="icon-button" type="button" data-scroll-row="phrases" data-scroll-dir="1" aria-label="Scroll phrase sets right">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="set-track" data-set-track="phrases">
+              ${commonPhraseSets.map((phraseSet, index) => `
+                <button class="set-card" type="button" data-phrase-set-index="${index}">
+                  <span class="pill">Phrases ${index + 1}</span>
+                  <h3>${phraseSet.title}</h3>
+                  <p>${phraseSet.label}</p>
+                  <div class="set-card-footer">
+                    <strong>${selectedLanguages().length} languages</strong>
+                  </div>
+                </button>
+              `).join("")}
+            </div>
+          </section>
+        `;
+
+      setGrid.querySelectorAll("[data-set-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          chooseSet(button.dataset.setId);
+        });
+      });
+      setGrid.querySelectorAll("[data-phrase-set-index]").forEach(button => {
+        button.addEventListener("click", () => {
+          choosePhraseSet(Number(button.dataset.phraseSetIndex));
+        });
+      });
+      setGrid.querySelectorAll("[data-scroll-row]").forEach(button => {
+        button.addEventListener("click", () => {
+          const track = setGrid.querySelector(`[data-set-track="${button.dataset.scrollRow}"]`);
+          const direction = Number(button.dataset.scrollDir);
+          track.scrollBy({ left: direction * Math.max(260, track.clientWidth * 0.78), behavior: "smooth" });
+        });
+      });
+    }
+
+    function chooseSet(setId) {
+      const set = visibleLearningSets().find(item => item.id === setId);
+      if (!set || !isSetUnlocked(set)) {
+        showToast("Finish the previous set to unlock this one.");
+        return;
+      }
+      activeSetId = set.languageSets[0]?.id || learningSets[0].id;
+      sectionSelected = true;
+      vocabMode = "core";
+      phraseIndex = set.languageSets[0]?.phraseIndex || 0;
+      vocabOffset = 0;
+      quizIndex = 0;
+      quizLanguageId = "mixed";
+      flashcardIndex = 0;
+      flippedFlashcards = new Set();
+      activeStudyView = "list";
+      answeredQuestion = false;
+      renderAll();
+      saveState();
+      window.location.hash = `section-${set.section}`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      showToast(`${set.title} loaded.`);
+    }
+
+    function choosePhraseSet(index) {
+      const phraseSet = commonPhraseSets[index] || commonPhraseSets[0];
+      const set = visibleLearningSets().find(item => item.section === activeSectionNumber()) || visibleLearningSets()[0];
+      activeSetId = set.languageSets[0]?.id || learningSets[0].id;
+      sectionSelected = true;
+      phraseIndex = phraseSet.phraseIndex;
+      activeStudyView = "phrases";
+      flashcardIndex = 0;
+      flippedFlashcards = new Set();
+      answeredQuestion = false;
+      renderAll();
+      saveState();
+      window.location.hash = `section-${set.section}`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      showToast(`${phraseSet.title} loaded.`);
+    }
+
+    function showDashboard() {
+      sectionSelected = false;
+      renderAll();
+      saveState();
+      if (window.location.hash) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openSectionFromRoute() {
+      const match = window.location.hash.match(/^#section-(\d+)$/);
+      if (!match) {
+        return;
+      }
+      const targetSection = Number(match[1]);
+      const set = visibleLearningSets().find(item => item.section === targetSection);
+      if (!set || !isSetUnlocked(set)) {
+        history.replaceState("", document.title, window.location.pathname + window.location.search);
+        sectionSelected = false;
+        renderAll();
+        return;
+      }
+      activeSetId = set.languageSets[0]?.id || learningSets[0].id;
+      sectionSelected = true;
+      vocabMode = "core";
+      phraseIndex = set.languageSets[0]?.phraseIndex || 0;
+      vocabOffset = 0;
+      quizIndex = 0;
+      quizLanguageId = "mixed";
+      flashcardIndex = 0;
+      flippedFlashcards = new Set();
+      activeStudyView = "list";
+      answeredQuestion = false;
+      renderAll();
+      saveState();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function moveToNextSet() {
+      const track = visibleLearningSets();
+      const index = track.findIndex(set => set.section === activeSectionNumber());
+      const progress = setProgress[`shared-section-${activeSectionNumber()}`] || { correct: 0, completed: false };
+      const currentSet = track[index] || track[0];
+      if ((progress.correct || 0) < (currentSet?.quizGoal || 20)) {
+        showToast("Pass this set quiz before moving on.");
+        return;
+      }
+      if (index >= track.length - 1) {
+        showToast("You completed the vocabulary sets.");
+        return;
+      }
+      chooseSet(track[index + 1].id);
+    }
+
+    function renderChoices() {
+      languageChoices.innerHTML = languages.map(language => `
+        <label class="language-choice">
+          <input type="checkbox" value="${language.id}" ${selected.has(language.id) ? "checked" : ""}>
+          <span><strong>${language.name}</strong><span>${language.level} learning path</span></span>
+          <b>${language.target.toLocaleString()}</b>
+        </label>
+      `).join("");
+
+      languageChoices.querySelectorAll("input").forEach(input => {
+        input.addEventListener("change", event => {
+          if (event.target.checked) {
+            selected.add(event.target.value);
+          } else if (selected.size > 1) {
+            selected.delete(event.target.value);
+          } else {
+            event.target.checked = true;
+            showToast("Keep at least one study language selected.");
+          }
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderVocabTable() {
+      const active = activeLearningLanguages();
+      const rows = activeVocabRows();
+      const offset = vocabOffset % rows.length;
+      const rotated = [...rows.slice(offset), ...rows.slice(0, offset)];
+      const gridTemplate = `110px repeat(${active.length}, minmax(170px, 1fr))`;
+      vocabTable.innerHTML = `
+        <div class="vocab-row header" style="grid-template-columns: ${gridTemplate}; min-width: ${110 + active.length * 170}px;">
+          <div>Concept</div>
+          ${active.map(language => `<div>${language.name}</div>`).join("")}
+        </div>
+        ${rotated.map(row => `
+          <div class="vocab-row" style="grid-template-columns: ${gridTemplate}; min-width: ${110 + active.length * 170}px;">
+            <div class="concept">${row.concept}</div>
+            ${active.map(language => `
+              <div class="word-cell">
+                <div class="word-with-audio">
+                  <strong>${formatWord(language.id, row[language.id])}</strong>
+                  ${audioButton(language.id, row[language.id].word, `Play ${language.name} audio`)}
+                </div>
+                <span>${row[language.id].hint}</span>
+              </div>
+            `).join("")}
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function renderFlashcard() {
+      const active = activeLearningLanguages();
+      const rows = activeVocabRows();
+      const index = ((flashcardIndex % rows.length) + rows.length) % rows.length;
+      const card = rows[index];
+      flashcardCount.textContent = `${index + 1} of ${rows.length}`;
+      flashcardCards.innerHTML = active.map(language => `
+        <button class="flashcard-card ${flippedFlashcards.has(language.id) ? "flipped" : ""}" type="button" data-flashcard-language="${language.id}" aria-label="Flip ${language.name} card" aria-pressed="${flippedFlashcards.has(language.id)}">
+          <div class="flashcard-card-inner">
+            <div class="flashcard-face flashcard-front">
+              <span>${language.name}</span>
+              <strong>${card.concept}</strong>
+              <em>English</em>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <span>${language.name}</span>
+              <strong>${formatWord(language.id, card[language.id])}</strong>
+              ${audioButton(language.id, card[language.id].word, `Play ${language.name} audio`, "span")}
+              <em>${card[language.id].hint}</em>
+            </div>
+          </div>
+        </button>
+      `).join("");
+      flashcardCards.querySelectorAll("[data-flashcard-language]").forEach(button => {
+        button.addEventListener("click", event => {
+          if (event.target.closest("[data-audio-word]")) {
+            return;
+          }
+          const languageId = button.dataset.flashcardLanguage;
+          if (flippedFlashcards.has(languageId)) {
+            flippedFlashcards.delete(languageId);
+          } else {
+            flippedFlashcards.add(languageId);
+          }
+          button.classList.toggle("flipped", flippedFlashcards.has(languageId));
+          button.setAttribute("aria-pressed", String(flippedFlashcards.has(languageId)));
+          updateFlashcardLock();
+          saveState();
+        });
+      });
+      updateFlashcardLock();
+    }
+
+    function updateFlashcardLock() {
+      const active = activeLearningLanguages();
+      const allFlipped = active.length > 0 && active.every(language => flippedFlashcards.has(language.id));
+      flashcardHint.textContent = allFlipped ? "All cards flipped. You can go to the next word." : "Flip every language card to unlock the next word.";
+      nextCard.disabled = !allFlipped;
+    }
+
+    function renderStudyView() {
+      document.querySelectorAll("[data-study-view]").forEach(button => {
+        button.classList.toggle("active", button.dataset.studyView === activeStudyView);
+      });
+      document.querySelectorAll("[data-study-view-panel]").forEach(panel => {
+        panel.classList.toggle("hidden", panel.dataset.studyViewPanel !== activeStudyView || !sectionSelected);
+      });
+    }
+
+    function renderProgress() {
+      if (!progressRows) {
+        return;
+      }
+      const active = selectedLanguages();
+      progressRows.innerHTML = active.map(language => `
+        <div class="focus-row">
+          <div class="flag ${language.id}">${language.code}</div>
+          <div><strong>${language.name}</strong><span>${language.due} vocab reviews due</span></div>
+          <b>${language.progress}%</b>
+        </div>
+      `).join("");
+    }
+
+    function renderPhrases() {
+      const active = activeLearningLanguages();
+      const phraseSet = studyPhraseSets[phraseIndex] || studyPhraseSets[0];
+      setActiveTab("[data-phrase-index]", String(phraseIndex), "data-phrase-index");
+      phraseCount.textContent = `${active.length} phrase paths`;
+      phraseGrid.innerHTML = active.map(language => {
+        const phrase = phraseSet[language.id];
+        return `
+          <article class="phrase-card">
+            <div class="language-head">
+              <h3>${language.name}</h3>
+              <span class="pill">${phraseSet.intent}</span>
+            </div>
+            <strong>${phrase.phrase}</strong>
+            <em>${phrase.meaning}</em>
+            <div class="note">${phrase.note}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderGrammar() {
+      const active = activeLearningLanguages();
+      grammarCount.textContent = `${active.length} active`;
+      grammarList.innerHTML = active.map(language => `
+        <article class="grammar-card">
+          <div class="language-head">
+            <h3>${language.name}</h3>
+            <span class="pill">${language.level}</span>
+          </div>
+          ${grammarSets[language.id].map(rule => `
+            <div>
+              <strong>${rule.title}</strong>
+              <span>${rule.body}</span>
+            </div>
+          `).join("")}
+        </article>
+      `).join("");
+    }
+
+    function renderQuizModes() {
+      const active = activeLearningLanguages();
+      quizLanguageId = "mixed";
+      quizModeBar.innerHTML = `
+        <div class="quiz-test-label">One test: ${active.map(language => language.name).join(", ")}</div>
+      `;
+    }
+
+    function quizScoreKey() {
+      return `section-${activeSectionNumber()}-all-languages`;
+    }
+
+    function missedQuizKey() {
+      return `section-${activeSectionNumber()}`;
+    }
+
+    function quizTotal() {
+      return activeVocabRows().length * Math.max(1, activeLearningLanguages().length);
+    }
+
+    function activeQuizRows() {
+      const rows = activeVocabRows();
+      const reviewIndexes = missedQuizQuestions[missedQuizKey()] || [];
+      if (quizIndex < rows.length || !reviewIndexes.length) {
+        return { rows, reviewing: false };
+      }
+      return { rows: reviewIndexes.map(index => rows[index]).filter(Boolean), reviewing: true };
+    }
+
+    function currentQuizScore() {
+      const questionScores = quizQuestionScores[quizScoreKey()];
+      if (questionScores) {
+        return Math.min(quizTotal(), Object.values(questionScores).reduce((total, value) => total + Number(value || 0), 0));
+      }
+      return 0;
+    }
+
+    function renderQuizScore() {
+      const current = currentQuizScore();
+      const total = quizTotal();
+      quizScore.textContent = `${current} points`;
+      quizCornerScore.textContent = `${current}/${total}`;
+    }
+
+    function renderQuiz() {
+      const active = activeLearningLanguages();
+      const allRows = activeVocabRows();
+      const quizState = activeQuizRows();
+      const rows = quizState.rows;
+      const localIndex = quizState.reviewing ? (quizIndex - allRows.length) % rows.length : quizIndex % rows.length;
+      const vocab = rows[localIndex];
+      const vocabIndex = allRows.findIndex(row => row.concept === vocab.concept);
+
+      renderQuizModes();
+      renderQuizScore();
+      quizMode.textContent = quizState.reviewing
+        ? `Review ${localIndex + 1} of ${rows.length}`
+        : `Question ${quizIndex % rows.length + 1} of ${rows.length}`;
+      quizProgressFill.style.width = `${Math.round(((localIndex + 1) / rows.length) * 100)}%`;
+      quizPrompt.textContent = vocab.concept;
+      quizAnswers.innerHTML = active.map(language => {
+        const correct = vocab[language.id].word;
+        const wrong = studyVocabSets
+          .filter(item => item.mode === "core" && item.concept !== vocab.concept)
+          .slice(0, 2)
+          .map(item => ({ value: item[language.id].word, label: formatWord(language.id, item[language.id]) }));
+        const answers = [
+          { value: correct, label: formatWord(language.id, vocab[language.id]) },
+          ...wrong
+        ].sort((a, b) => a.value.localeCompare(b.value));
+        return `
+          <div class="quiz-language-group" data-quiz-language="${language.id}" data-correct="${escapeAttribute(correct)}">
+            <div class="quiz-language-head">
+              <span>${language.name}</span>
+              <span class="pill">Choose 1</span>
+            </div>
+            <div class="quiz-language-options">
+              ${answers.map(answer => `
+                <button type="button" data-language="${language.id}" data-answer="${escapeAttribute(answer.value)}">
+                  <span>
+                    <span class="word-with-audio">
+                      <b>${answer.label}</b>
+                      ${audioButton(language.id, answer.value, `Play ${language.name} audio`, "span")}
+                    </span>
+                    ${answer.value === correct ? "Possible match" : "Vocabulary option"}
+                  </span>
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      quizAnswers.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+          if (answeredQuestion) {
+            return;
+          }
+          const group = button.closest("[data-quiz-language]");
+          group.querySelectorAll("button").forEach(option => option.classList.remove("correct", "incorrect", "selected"));
+          button.classList.add("selected");
+          const selectedGroups = quizAnswers.querySelectorAll(".quiz-language-group button.selected").length;
+          if (selectedGroups < active.length) {
+            return;
+          }
+          answeredQuestion = true;
+          const groups = [...quizAnswers.querySelectorAll(".quiz-language-group")];
+          const correctCount = groups.filter(item => {
+            const selectedAnswer = item.querySelector("button.selected");
+            return selectedAnswer && selectedAnswer.dataset.answer === item.dataset.correct;
+          }).length;
+          const isCorrect = correctCount === active.length;
+          groups.forEach(item => {
+            const selectedAnswer = item.querySelector("button.selected");
+            item.querySelectorAll("button").forEach(option => {
+              option.disabled = true;
+              if (option.dataset.answer === item.dataset.correct) {
+                option.classList.add("correct");
+              }
+            });
+            if (selectedAnswer && selectedAnswer.dataset.answer !== item.dataset.correct) {
+              selectedAnswer.classList.add("incorrect");
+            }
+          });
+          if (correctCount > 0) {
+            score += correctCount;
+            const scoreKey = quizScoreKey();
+            const questionScores = quizQuestionScores[scoreKey] || {};
+            questionScores[vocabIndex] = Math.max(questionScores[vocabIndex] || 0, correctCount);
+            quizQuestionScores[scoreKey] = questionScores;
+            quizScores[scoreKey] = currentQuizScore();
+            renderQuizScore();
+          }
+          if (isCorrect) {
+            const missedKey = missedQuizKey();
+            missedQuizQuestions[missedKey] = (missedQuizQuestions[missedKey] || []).filter(index => index !== vocabIndex);
+            const currentSet = visibleLearningSets().find(set => set.section === activeSectionNumber()) || visibleLearningSets()[0];
+            const progress = setProgress[currentSet.id] || { correct: 0, completed: false };
+            progress.correct = Math.min(currentSet.quizGoal, (progress.correct || 0) + 1);
+            progress.completed = progress.correct >= currentSet.quizGoal;
+            setProgress[currentSet.id] = progress;
+            active.forEach(language => {
+              language.due = Math.max(0, language.due - 1);
+              language.progress = Math.min(100, language.progress + 1);
+            });
+            renderSets();
+            renderProgress();
+            renderSummary();
+            if (progress.completed) {
+              const nextIndex = visibleLearningSets().findIndex(set => set.id === currentSet.id) + 1;
+              showToast(nextIndex < visibleLearningSets().length ? `${currentSet.title} complete. Next set unlocked.` : "All current sets complete.");
+            } else if (quizState.reviewing) {
+              showToast("Nice. This missed question is cleared.");
+            } else {
+              showToast(`${progress.correct}/${currentSet.quizGoal} correct for this set.`);
+            }
+          } else {
+            const missedKey = missedQuizKey();
+            const missed = missedQuizQuestions[missedKey] || [];
+            if (!missed.includes(vocabIndex)) {
+              missed.push(vocabIndex);
+            }
+            missedQuizQuestions[missedKey] = missed;
+            showToast("Review the highlighted answers. This question will come back at the end.");
+          }
+          saveState();
+        });
+      });
+    }
+
+    function renderSearchResults() {
+      const query = searchInput.value.trim().toLowerCase();
+      const results = [];
+      studyVocabSets.forEach((row, index) => {
+        const haystack = [
+          row.concept,
+          ...languages.flatMap(language => [row[language.id].word, row[language.id].hint])
+        ].join(" ").toLowerCase();
+        if (!query || haystack.includes(query)) {
+          results.push({ label: row.concept, detail: "Vocabulary set", type: "vocab", index });
+        }
+      });
+      studyPhraseSets.forEach((set, index) => {
+        const haystack = [
+          set.intent,
+          ...languages.flatMap(language => [set[language.id].phrase, set[language.id].meaning, set[language.id].note])
+        ].join(" ").toLowerCase();
+        if (query && haystack.includes(query)) {
+          results.push({ label: set.intent, detail: "Phrase practice", type: "phrase", index });
+        }
+      });
+
+      searchResults.innerHTML = results.slice(0, 8).map(result => `
+        <button class="search-result" type="button" data-type="${result.type}" data-index="${result.index}">
+          <strong>${result.label}</strong>
+          <span>${result.detail}</span>
+        </button>
+      `).join("") || `<span class="note">No matches yet.</span>`;
+
+      searchResults.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.type === "vocab") {
+            const row = studyVocabSets[Number(button.dataset.index)];
+            vocabMode = "core";
+            vocabOffset = Math.max(0, activeVocabRows().findIndex(item => item.concept === row.concept));
+            renderVocabTable();
+            focusPanel(document.querySelector(".vocab-panel"));
+          } else {
+            phraseIndex = Number(button.dataset.index);
+            renderPhrases();
+            focusPanel(document.querySelector(".track-panel"));
+          }
+          saveState();
+        });
+      });
+    }
+
+    function renderSummary() {
+      const active = selectedLanguages();
+      const set = visibleLearningSets().find(item => item.section === activeSectionNumber()) || visibleLearningSets()[0];
+      const total = active.reduce((sum, language) => sum + language.target, 0);
+      const due = active.reduce((sum, language) => sum + language.due, 0);
+      selectedCount.textContent = `${active.length} selected`;
+      if (dueCount) {
+        dueCount.textContent = `${due} due`;
+      }
+      sidePlan.textContent = `${active.length}-language plan`;
+      topSummary.textContent = `Set ${set.section}: English plus ${active.map(language => language.name).join(", ")} vocabulary translations and quiz.`;
+      sidePlanText.textContent = `${active.map(language => language.name).join(", ")} vocabulary is learned together in shared sets.`;
+      studyPagePill.textContent = `Set ${set.section}`;
+      studyPageTitle.textContent = set.title;
+      studyPageSubtitle.textContent = "";
+      studyPageSubtitle.hidden = true;
+    }
+
+    function renderAll() {
+      const visibleSets = visibleLearningSets();
+      if (visibleSets.length && !visibleSets.some(set => set.section === activeSectionNumber())) {
+        activeSetId = visibleSets[0].languageSets[0]?.id || learningSets[0].id;
+        sectionSelected = false;
+        vocabMode = "core";
+        phraseIndex = visibleSets[0].languageSets[0]?.phraseIndex || 0;
+        vocabOffset = 0;
+        quizIndex = 0;
+      }
+      renderSets();
+      dashboardPage.classList.toggle("hidden", sectionSelected);
+      studyPage.classList.toggle("hidden", !sectionSelected);
+      renderSummary();
+      renderChoices();
+      renderVocabTable();
+      renderFlashcard();
+      renderProgress();
+      renderPhrases();
+      renderGrammar();
+      renderQuiz();
+      renderStudyView();
+    }
+
+    document.querySelector("#shuffleWords").addEventListener("click", () => {
+      vocabOffset = (vocabOffset + 1) % activeVocabRows().length;
+      renderVocabTable();
+      saveState();
+      showToast("Vocabulary set rotated.");
+    });
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-audio-word]");
+      if (!button) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      playVocabularyAudio(button.dataset.audioLanguage, button.dataset.audioWord);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      const button = event.target.closest("[data-audio-word]");
+      if (!button) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      playVocabularyAudio(button.dataset.audioLanguage, button.dataset.audioWord);
+    });
+
+    document.querySelectorAll("[data-study-view]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeStudyView = button.dataset.studyView;
+        flippedFlashcards = new Set();
+        renderStudyView();
+        if (activeStudyView === "flashcards") {
+          renderFlashcard();
+        }
+        if (activeStudyView === "quiz") {
+          renderQuiz();
+        }
+        if (activeStudyView === "phrases") {
+          renderPhrases();
+        }
+        saveState();
+      });
+    });
+
+    previousCard.addEventListener("click", () => {
+      flashcardIndex -= 1;
+      flippedFlashcards = new Set();
+      renderFlashcard();
+      saveState();
+    });
+
+    nextCard.addEventListener("click", () => {
+      if (!activeLearningLanguages().every(language => flippedFlashcards.has(language.id))) {
+        showToast("Flip each language card before moving on.");
+        return;
+      }
+      flashcardIndex += 1;
+      flippedFlashcards = new Set();
+      renderFlashcard();
+      saveState();
+    });
+
+    document.querySelector("#nextQuestion").addEventListener("click", () => {
+      const rows = activeVocabRows();
+      const missed = missedQuizQuestions[missedQuizKey()] || [];
+      if (quizIndex < rows.length - 1) {
+        quizIndex += 1;
+      } else if (quizIndex === rows.length - 1 && missed.length) {
+        quizIndex = rows.length;
+        showToast(`${missed.length} missed question${missed.length === 1 ? "" : "s"} ready for review.`);
+      } else if (quizIndex >= rows.length && missed.length) {
+        quizIndex = rows.length;
+      } else {
+        quizIndex = 0;
+        showToast("Quiz pass complete. Starting the set again.");
+      }
+      answeredQuestion = false;
+      renderQuiz();
+      saveState();
+    });
+
+    document.querySelectorAll("[data-phrase-index]").forEach(button => {
+      button.addEventListener("click", () => {
+        phraseIndex = Number(button.dataset.phraseIndex);
+        renderPhrases();
+        saveState();
+        showToast(`${button.textContent.trim()} phrases loaded.`);
+      });
+    });
+
+    function openAuthModal() {
+      authModal.classList.add("open");
+      setTimeout(() => document.querySelector("#authEmail").focus(), 0);
+    }
+
+    function closeAuthModal() {
+      authModal.classList.remove("open");
+    }
+
+    function showSignedIn(label) {
+      setSignedInView(label);
+      closeAuthModal();
+      saveState();
+      showToast("Progress saving is on for this prototype.");
+    }
+
+    function signOut() {
+      localStorage.removeItem("multilangState");
+      localStorage.removeItem("multilangGoogleProfile");
+      setSignedInView("");
+      if (googleSignInButton) {
+        googleSignInButton.innerHTML = "";
+      }
+      showToast("Signed out of MultiLang on this browser.");
+      window.initGoogleSignIn();
+    }
+
+    function decodeGoogleCredential(credential) {
+      const payload = credential.split(".")[1];
+      const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const decoded = decodeURIComponent(atob(normalized).split("").map(char => {
+        return `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`;
+      }).join(""));
+      return JSON.parse(decoded);
+    }
+
+    function handleGoogleCredential(response) {
+      if (!response.credential) {
+        showToast("Google did not return a sign-in credential.");
+        return;
+      }
+      const profile = decodeGoogleCredential(response.credential);
+      localStorage.setItem("multilangGoogleProfile", JSON.stringify({
+        sub: profile.sub,
+        name: profile.name,
+        email: profile.email,
+        picture: profile.picture
+      }));
+      showSignedIn(profile.given_name || profile.name || profile.email || "Google user");
+    }
+
+    function microsoftRedirectUri() {
+      return window.location.origin + window.location.pathname;
+    }
+
+    function microsoftAuthClient() {
+      if (!microsoftClientId) {
+        return null;
+      }
+      if (!window.msal?.PublicClientApplication) {
+        return null;
+      }
+      if (!window.multilangMicrosoftClient) {
+        window.multilangMicrosoftClient = new msal.PublicClientApplication({
+          auth: {
+            clientId: microsoftClientId,
+            authority: "https://login.microsoftonline.com/common",
+            redirectUri: microsoftRedirectUri()
+          },
+          cache: {
+            cacheLocation: "localStorage"
+          }
+        });
+      }
+      return window.multilangMicrosoftClient;
+    }
+
+    async function handleMicrosoftSignIn() {
+      const authClient = microsoftAuthClient();
+      if (!microsoftClientId) {
+        showToast("Microsoft sign-in needs a Microsoft client ID from an app registration.");
+        return;
+      }
+      if (!authClient) {
+        showToast("Microsoft sign-in is still loading. Try again in a moment.");
+        return;
+      }
+      try {
+        const result = await authClient.loginPopup({
+          scopes: ["openid", "profile", "email"],
+          prompt: "select_account"
+        });
+        const account = result.account;
+        localStorage.setItem("multilangMicrosoftProfile", JSON.stringify({
+          homeAccountId: account.homeAccountId,
+          name: account.name,
+          username: account.username
+        }));
+        showSignedIn(account.name || account.username || "Microsoft user");
+      } catch (error) {
+        if (error?.errorCode === "user_cancelled" || error?.errorCode === "user_cancelled") {
+          showToast("Microsoft sign-in was canceled.");
+          return;
+        }
+        showToast("Microsoft sign-in could not finish. Check the redirect URL in Microsoft Entra.");
+      }
+    }
+
+    window.initGoogleSignIn = function initGoogleSignIn() {
+      if (!googleSignInButton || !window.google || !window.google.accounts) {
+        return;
+      }
+      googleSignInButton.innerHTML = "";
+      googleSetupMessage.style.display = "block";
+      google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleCredential
+      });
+      google.accounts.id.renderButton(googleSignInButton, {
+        theme: "outline",
+        size: "large",
+        text: "signup_with",
+        shape: "rectangular",
+        width: Math.min(360, googleSignInButton.clientWidth || 360)
+      });
+      googleSetupMessage.style.display = "none";
+    };
+
+    openSearch.addEventListener("click", () => {
+      searchPanel.classList.toggle("open");
+      if (searchPanel.classList.contains("open")) {
+        renderSearchResults();
+        searchInput.focus();
+      }
+    });
+    searchInput.addEventListener("input", renderSearchResults);
+    addLanguage.addEventListener("click", () => {
+      showDashboard();
+      focusPanel(document.querySelector(".selector-panel"));
+    });
+    tunePlan.addEventListener("click", () => {
+      showDashboard();
+      focusPanel(document.querySelector(".selector-panel"));
+    });
+    todayNav.addEventListener("click", () => {
+      showDashboard();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    backToSections.addEventListener("click", showDashboard);
+    window.addEventListener("hashchange", openSectionFromRoute);
+    nextSet.addEventListener("click", moveToNextSet);
+    if (startReview) {
+      startReview.addEventListener("click", () => {
+        vocabMode = "core";
+        phraseIndex = activeSet().phraseIndex;
+        vocabOffset = 0;
+        quizIndex = 0;
+        answeredQuestion = false;
+        renderPhrases();
+        renderVocabTable();
+        renderQuiz();
+        saveState();
+        focusPanel(document.querySelector(".quiz-panel"));
+        showToast(`${activeSet().title} vocabulary quiz loaded.`);
+      });
+    }
+    openAuth.addEventListener("click", openAuthModal);
+    landingLogin.addEventListener("click", openAuthModal);
+    heroLogin.addEventListener("click", openAuthModal);
+    landingDemo.addEventListener("click", () => showSignedIn("Demo"));
+    heroDemo.addEventListener("click", () => showSignedIn("Demo"));
+    closeAuth.addEventListener("click", closeAuthModal);
+    signOutButton.addEventListener("click", signOut);
+    guestMode.addEventListener("click", () => showSignedIn("Guest"));
+    microsoftSignInButton?.addEventListener("click", handleMicrosoftSignIn);
+    authModal.addEventListener("click", event => {
+      if (event.target === authModal) {
+        closeAuthModal();
+      }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeAuthModal();
+      }
+    });
+    document.querySelectorAll("[data-auth-action]").forEach(button => {
+      button.addEventListener("click", () => showSignedIn(button.dataset.authAction));
+    });
+    authForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const email = document.querySelector("#authEmail").value.trim();
+      showSignedIn(email ? email.split("@")[0] : "Learner");
+    });
+
+    renderAll();
+    openSectionFromRoute();
+  </script>
+  <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer onload="window.initGoogleSignIn()"></script>
+</body>
+</html>

@@ -2038,10 +2038,6 @@
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h8"/><path d="M7 13h5"/></svg>
               Flash Cards
             </button>
-            <button class="study-mode-button" type="button" data-study-view="phrases">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
-              Common Phrases
-            </button>
             <button class="study-mode-button" type="button" data-study-view="quiz">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               Quiz
@@ -2081,10 +2077,22 @@
           </div>
         </section>
 
-        <div class="learning-stack study-view hidden" data-study-view-panel="phrases">
+        <div class="phrase-page hidden" id="phrasePage">
+          <section class="study-page-head" aria-labelledby="phrasePageTitle">
+            <div>
+              <span class="pill" id="phrasePagePill">Phrase Set 1</span>
+              <h2 id="phrasePageTitle">Common Phrases</h2>
+              <p id="phrasePageSubtitle">Useful phrases across your selected study languages.</p>
+            </div>
+            <button class="secondary" type="button" id="backToPhraseSets">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+              Back to Sets
+            </button>
+          </section>
+        <div class="learning-stack">
           <section class="panel track-panel" aria-labelledby="phrase-title">
             <div class="panel-head">
-              <h2 id="phrase-title">Phrase Builder</h2>
+              <h2 id="phrase-title">Common Phrases</h2>
               <span class="pill" id="phraseCount">3 phrase paths</span>
             </div>
             <div class="tabs" role="tablist" aria-label="Phrase mode">
@@ -2102,6 +2110,7 @@
             </div>
             <div class="rule-list" id="grammarList"></div>
           </aside>
+        </div>
         </div>
 
         <section class="panel quiz-panel study-view hidden" id="quizPanel" data-study-view-panel="quiz" aria-labelledby="quiz-title">
@@ -3011,6 +3020,8 @@
     let activeStudyView = "list";
     let flashcardIndex = Number.isInteger(savedState.flashcardIndex) ? savedState.flashcardIndex : 0;
     let flippedFlashcards = new Set();
+    let phrasePageSelected = false;
+    let activePhraseSetIndex = Number.isInteger(savedState.activePhraseSetIndex) ? savedState.activePhraseSetIndex : 0;
 
     if (savedState.languageProgress) {
       languages.forEach(language => {
@@ -3031,10 +3042,15 @@
     const todayNav = document.querySelector("#todayNav");
     const dashboardPage = document.querySelector("#dashboardPage");
     const studyPage = document.querySelector("#studyPage");
+    const phrasePage = document.querySelector("#phrasePage");
     const studyPagePill = document.querySelector("#studyPagePill");
     const studyPageTitle = document.querySelector("#studyPageTitle");
     const studyPageSubtitle = document.querySelector("#studyPageSubtitle");
+    const phrasePagePill = document.querySelector("#phrasePagePill");
+    const phrasePageTitle = document.querySelector("#phrasePageTitle");
+    const phrasePageSubtitle = document.querySelector("#phrasePageSubtitle");
     const backToSections = document.querySelector("#backToSections");
+    const backToPhraseSets = document.querySelector("#backToPhraseSets");
     const flashcardPanel = document.querySelector("#flashcardPanel");
     const flashcardCount = document.querySelector("#flashcardCount");
     const flashcardCards = document.querySelector("#flashcardCards");
@@ -3132,6 +3148,7 @@
         setProgress,
         sectionSelected,
         flashcardIndex,
+        activePhraseSetIndex,
         languageProgress: Object.fromEntries(languages.map(language => [
           language.id,
           { progress: language.progress, due: language.due }
@@ -3498,6 +3515,7 @@
       }
       activeSetId = set.languageSets[0]?.id || learningSets[0].id;
       sectionSelected = true;
+      phrasePageSelected = false;
       vocabMode = "core";
       phraseIndex = set.languageSets[0]?.phraseIndex || 0;
       vocabOffset = 0;
@@ -3516,23 +3534,24 @@
 
     function choosePhraseSet(index) {
       const phraseSet = commonPhraseSets[index] || commonPhraseSets[0];
-      const set = visibleLearningSets().find(item => item.section === activeSectionNumber()) || visibleLearningSets()[0];
-      activeSetId = set.languageSets[0]?.id || learningSets[0].id;
-      sectionSelected = true;
+      activePhraseSetIndex = index;
+      sectionSelected = false;
+      phrasePageSelected = true;
       phraseIndex = phraseSet.phraseIndex;
-      activeStudyView = "phrases";
+      activeStudyView = "list";
       flashcardIndex = 0;
       flippedFlashcards = new Set();
       answeredQuestion = false;
       renderAll();
       saveState();
-      window.location.hash = `section-${set.section}`;
+      window.location.hash = `phrases-${index + 1}`;
       window.scrollTo({ top: 0, behavior: "smooth" });
       showToast(`${phraseSet.title} loaded.`);
     }
 
     function showDashboard() {
       sectionSelected = false;
+      phrasePageSelected = false;
       renderAll();
       saveState();
       if (window.location.hash) {
@@ -3542,6 +3561,18 @@
     }
 
     function openSectionFromRoute() {
+      const phraseMatch = window.location.hash.match(/^#phrases-(\d+)$/);
+      if (phraseMatch) {
+        const index = Math.max(0, Number(phraseMatch[1]) - 1);
+        activePhraseSetIndex = Math.min(index, commonPhraseSets.length - 1);
+        phraseIndex = commonPhraseSets[activePhraseSetIndex]?.phraseIndex || 0;
+        sectionSelected = false;
+        phrasePageSelected = true;
+        renderAll();
+        saveState();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       const match = window.location.hash.match(/^#section-(\d+)$/);
       if (!match) {
         return;
@@ -3556,6 +3587,7 @@
       }
       activeSetId = set.languageSets[0]?.id || learningSets[0].id;
       sectionSelected = true;
+      phrasePageSelected = false;
       vocabMode = "core";
       phraseIndex = set.languageSets[0]?.phraseIndex || 0;
       vocabOffset = 0;
@@ -3961,9 +3993,8 @@
             renderVocabTable();
             focusPanel(document.querySelector(".vocab-panel"));
           } else {
-            phraseIndex = Number(button.dataset.index);
-            renderPhrases();
-            focusPanel(document.querySelector(".track-panel"));
+            const phraseSetIndex = commonPhraseSets.findIndex(set => set.phraseIndex === Number(button.dataset.index));
+            choosePhraseSet(Math.max(0, phraseSetIndex));
           }
           saveState();
         });
@@ -3986,6 +4017,10 @@
       studyPageTitle.textContent = set.title;
       studyPageSubtitle.textContent = "";
       studyPageSubtitle.hidden = true;
+      const phraseSet = commonPhraseSets[activePhraseSetIndex] || commonPhraseSets[0];
+      phrasePagePill.textContent = `Phrase Set ${activePhraseSetIndex + 1}`;
+      phrasePageTitle.textContent = phraseSet.title;
+      phrasePageSubtitle.textContent = phraseSet.label;
     }
 
     function renderAll() {
@@ -3999,8 +4034,9 @@
         quizIndex = 0;
       }
       renderSets();
-      dashboardPage.classList.toggle("hidden", sectionSelected);
+      dashboardPage.classList.toggle("hidden", sectionSelected || phrasePageSelected);
       studyPage.classList.toggle("hidden", !sectionSelected);
+      phrasePage.classList.toggle("hidden", !phrasePageSelected);
       renderSummary();
       renderChoices();
       renderVocabTable();
@@ -4052,9 +4088,6 @@
         }
         if (activeStudyView === "quiz") {
           renderQuiz();
-        }
-        if (activeStudyView === "phrases") {
-          renderPhrases();
         }
         saveState();
       });
@@ -4280,6 +4313,7 @@
     closeAuth.addEventListener("click", closeAuthModal);
     signOutButton.addEventListener("click", signOut);
     guestMode.addEventListener("click", () => showSignedIn("Guest"));
+    backToPhraseSets.addEventListener("click", showDashboard);
     microsoftSignInButton?.addEventListener("click", handleMicrosoftSignIn);
     authModal.addEventListener("click", event => {
       if (event.target === authModal) {
